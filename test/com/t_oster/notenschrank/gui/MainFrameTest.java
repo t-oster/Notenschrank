@@ -4,7 +4,7 @@ import com.t_oster.notenschrank.gui.MainFrame;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+package com.t_oster.notenschrank.gui;
 
 public class MainFrameTest {
 	@Test
