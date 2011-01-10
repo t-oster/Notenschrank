@@ -11,7 +11,12 @@ public class Voice {
 		return name;
 	}
 	
-	public boolean equals(Voice v){
-		return (this.name.equals(v.name));
+	public boolean equals(Object o){
+		if (o instanceof Voice){
+			return (this.name.equals(((Voice) o).name));
+		}
+		else{
+			return super.equals(o);
+		}
 	}
 }

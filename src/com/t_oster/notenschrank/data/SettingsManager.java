@@ -19,8 +19,8 @@ public class SettingsManager implements Serializable{
 	
 	//Attributes for Program Settings
 	private String programVersion = "0.1";
-	private String archivePath = "Archive";
-	private String stackPath = "Stack";
+	String archivePath = "Archive";
+	String stackPath = "Stack";
 	
 	private SettingsManager(){
 		

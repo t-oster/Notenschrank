@@ -1,5 +1,6 @@
 package com.t_oster.notenschrank.gui;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -52,6 +53,7 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener{
 		b.add(btScan);
 		b.add(btPrint);
 		this.setContentPane(b);
+		this.setMinimumSize(new Dimension(200,90));
 		this.setVisible(true);
 	}
 

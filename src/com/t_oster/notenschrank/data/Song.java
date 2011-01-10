@@ -11,7 +11,12 @@ public class Song {
 		return name;
 	}
 	
-	public boolean equals(Song s){
-		return (this.name.equals(s.name));
+	public boolean equals(Object o){
+		if (o instanceof Song){
+			return (this.name.equals(((Song) o).name));
+		}
+		else{
+			return super.equals(o);
+		}
 	}
 }

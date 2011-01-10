@@ -18,7 +18,7 @@ public class Notenschrank implements ActionListener{
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		javax.swing.JFrame.setDefaultLookAndFeelDecorated(true);
+		//javax.swing.JFrame.setDefaultLookAndFeelDecorated(true);
 		new Notenschrank();
 	}
 	
