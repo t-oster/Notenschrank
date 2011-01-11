@@ -1,9 +1,12 @@
 package com.t_oster.notenschrank.data;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
+
+import com.itextpdf.text.DocumentException;
 
 public class Archive {
 	private static Archive instance;
@@ -67,7 +70,7 @@ public class Archive {
 		return result.toArray(new Voice[0]);
 	}
 	
-	public Sheet[] getSheets(Song s){
+	public Sheet[] getSheets(Song s) throws IOException{
 		LinkedList<Sheet> result = new LinkedList<Sheet>();
 		File path = new File(SettingsManager.getInstance().getArchivePath(),s.toString());
 		for(File f:path.listFiles()){
@@ -78,7 +81,7 @@ public class Archive {
 		return result.toArray(new Sheet[0]);
 	}
 	
-	public Sheet[] getSheets(Voice v){
+	public Sheet[] getSheets(Voice v) throws IOException{
 		LinkedList<Sheet> result = new LinkedList<Sheet>();
 		for(Song s:this.getAvailableSongs()){
 			Sheet tmp = this.getSheet(s, v);
@@ -89,7 +92,7 @@ public class Archive {
 		return result.toArray(new Sheet[0]);
 	}
 	
-	public Sheet getSheet(Song s, Voice v){
+	public Sheet getSheet(Song s, Voice v) throws IOException{
 		File result = new File(
 				SettingsManager.getInstance().getArchivePath(),
 				s.toString()+File.pathSeparator+v.toString()+"."+Sheet.FILEEXTENSION);
@@ -105,7 +108,7 @@ public class Archive {
 		return calculatePath(s,v).exists();
 	}
 	
-	public void addToArchive(Sheet s, Song song, Voice v){
+	public void addToArchive(Sheet s, Song song, Voice v) throws IOException, DocumentException{
 		File target = calculatePath(song,v);
 		s.writeToFile(target);
 	}

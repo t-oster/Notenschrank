@@ -26,7 +26,14 @@ public class SettingsManager implements Serializable{
 		
 	}
 	
-	
+	public File getTempFile(){
+		File result;
+		int i=0;
+		do{
+			result = new File("///tmp//tmp"+i+".dat");
+		}while(result.exists());
+		return result;
+	}
 	
 	public String getProgramVersion(){
 		return programVersion;
