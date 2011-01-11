@@ -1,4 +1,4 @@
-package com.t_oster.notenschrank.gui;
+package com.t_oster.notenschrank.data;
 
 import static org.junit.Assert.*;
 

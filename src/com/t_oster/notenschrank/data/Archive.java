@@ -104,6 +104,16 @@ public class Archive {
 		}
 	}
 	
+	public Sheet[] getUnsortedSheets() throws IOException{
+		LinkedList<Sheet> result = new LinkedList<Sheet>();
+		for(File f:SettingsManager.getInstance().getStackPath().listFiles()){
+			if (f.isFile()){
+				result.add(new Sheet(f));
+			}
+		}
+		return result.toArray(new Sheet[0]);
+	}
+	
 	public boolean contains(Song s, Voice v){
 		return calculatePath(s,v).exists();
 	}

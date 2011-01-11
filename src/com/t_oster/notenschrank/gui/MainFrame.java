@@ -39,7 +39,7 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener{
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		
 		//initialize Attributes
-		btScan = new JButton("Noten einscannen");
+		btScan = new JButton("Noten einsortieren");
 		btPrint = new JButton("Noten ausdrucken");
 		lListeners = new LinkedList<ActionListener>();
 		
