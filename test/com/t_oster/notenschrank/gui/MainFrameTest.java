@@ -1,10 +1,13 @@
+package com.t_oster.notenschrank.gui;
+
 import org.junit.Test;
 
 import com.t_oster.notenschrank.gui.MainFrame;
 
+import static org.junit.Assert.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-package com.t_oster.notenschrank.gui;
+
 
 public class MainFrameTest {
 	@Test

@@ -63,4 +63,36 @@ public class SheetTest {
 		assertEquals(sc.numberOfPages(),sa.numberOfPages()+sb.numberOfPages());
 		
 	}
+
+	@Test
+	public void rotateTest() throws IOException, DocumentException{
+		Sheet s = new Sheet(new File("data//a.pdf"));
+		File tmp = new File("///tmp//c.pdf");
+		s.writeToFile(tmp);
+		s = new Sheet(tmp);
+		s.rotatePage(1, 2);
+		//show the image in a frame
+        JFrame frame = new JFrame("PDF Test");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Image img = s.getPreview(new Dimension(100,30), new Dimension(300,200));
+        assertEquals(img.getWidth(null),300);
+        assertEquals(img.getHeight(null),200);
+        assertNotNull(img);
+        
+        JLabel lab = new JLabel(new ImageIcon(img));
+		frame.add(lab);
+        frame.pack();
+        frame.setVisible(true);
+        JOptionPane.showMessageDialog(null, "you should see the PDF stuff", "bla", JOptionPane.OK_OPTION);
+        s.rotatePage(1, 1);
+        img = s.getPreview(new Dimension(100,30), new Dimension(300,200));
+        assertEquals(img.getWidth(null),300);
+        assertEquals(img.getHeight(null),200);
+        assertNotNull(img);
+        frame.remove(lab);
+        lab = new JLabel(new ImageIcon(img));
+		frame.add(lab);
+        frame.pack();
+        JOptionPane.showMessageDialog(null, "you should see the PDF stuff", "bla", JOptionPane.OK_OPTION);
+	}
 }

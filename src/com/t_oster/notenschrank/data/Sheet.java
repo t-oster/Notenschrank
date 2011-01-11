@@ -14,6 +14,8 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfImportedPage;
+import com.itextpdf.text.pdf.PdfName;
+import com.itextpdf.text.pdf.PdfNumber;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -51,6 +53,9 @@ public class Sheet {
 		}
 	}
 	
+	/*
+	 * Note: works only correct for pages rotated 0 or 180 degree
+	 */
 	public Image getPreview(Dimension percent, Dimension imagesize) throws IOException{
 		if (percent==null){
 			percent = new Dimension(100,100);
@@ -64,7 +69,13 @@ public class Sheet {
         
         int width = (int)page.getBBox().getWidth()*percent.width/100;
         int height =  (int)page.getBBox().getHeight()*percent.height/100;
-        Rectangle rect = new Rectangle((int)page.getBBox().getWidth()-width,(int)page.getBBox().getHeight()-height,
+        int posx =(int)page.getBBox().getWidth()-width;
+        int posy =(int)page.getBBox().getHeight()-height;
+        if (page.getRotation()==180){
+        	posx=0;
+        	posy=0;
+        }
+        Rectangle rect = new Rectangle(posx,posy,
                width,
                height);
         
@@ -96,8 +107,21 @@ public class Sheet {
 		return this.getPdfRendererPDF().getNumPages();
 	}
 
-	public void rotatePage(int page, int quarters){
-		throw new RuntimeException();
+	public void rotatePage(int page, int quarters) throws IOException, DocumentException{
+		File tmp = SettingsManager.getInstance().getTempFile();
+		this.writeToFile(tmp);
+		PdfReader reader = new PdfReader(tmp.getAbsolutePath());
+		for (int k = 1; k <= reader.getNumberOfPages(); k++) {
+			if (k==page){
+				reader.getPageN(k).put(PdfName.ROTATE, new PdfNumber(90*quarters));
+			}
+		}
+		FileOutputStream stream =  new FileOutputStream(pdf_file);
+		PdfStamper stp = new PdfStamper(reader,stream);
+		stp.close();
+		stream.flush();
+		tmp.delete();
+		this.reset();
 	}
 	
 	private void reset(){
@@ -108,7 +132,7 @@ public class Sheet {
 	public void addPage(Sheet s) throws IOException, DocumentException{
 		File temp = SettingsManager.getInstance().getTempFile();
 		this.writeToFile(temp);
-		PdfReader myReader = new Sheet(temp).getItextReader();
+		PdfReader myReader = new PdfReader(temp.getAbsolutePath());
 		PdfReader pdfReader = s.getItextReader();
 		Document document = new Document();
 		FileOutputStream stream = new FileOutputStream(pdf_file);
@@ -127,12 +151,15 @@ public class Sheet {
 		}
 		stream.flush();
 		document.close();
+		temp.delete();
 		this.reset();
 	}
 
 	public void writeToFile(File out) throws IOException, DocumentException{
 		PdfReader rd = this.getItextReader();
-		PdfStamper stp = new PdfStamper(rd, new FileOutputStream(out));
+		FileOutputStream stream = new FileOutputStream(out);
+		PdfStamper stp = new PdfStamper(rd, stream);
 		stp.close();
+		stream.flush();
 	}
 }
