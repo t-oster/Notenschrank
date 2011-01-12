@@ -17,8 +17,8 @@ public class SelectVoiceBox extends JComboBox {
 	
 	public SelectVoiceBox(){
 		super(Archive.getInstance().getAvailableVoices());
-		this.setEditable(true);
-		//AutoCompletion.enable(this);
+		//this.setEditable(true);
+		AutoCompletion.enable(this);
 	}
 	
 	public Voice getSelectedVoice(){

@@ -7,6 +7,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
@@ -15,7 +17,7 @@ import javax.swing.JPanel;
 
 import com.t_oster.notenschrank.data.Sheet;
 
-public class PreviewPanel extends JPanel implements Runnable, ComponentListener, MouseListener{
+public class PreviewPanel extends JPanel implements Runnable, ComponentListener, MouseListener, MouseWheelListener{
 	
 	/**
 	 * 
@@ -33,19 +35,42 @@ public class PreviewPanel extends JPanel implements Runnable, ComponentListener,
 		this.validate();
 		this.setVisible(true);
 		this.addMouseListener(this);
+		this.addMouseWheelListener(this);
 		this.parent=parent;
 		if (this.parent!=null){
 			this.parent.addComponentListener(this);
 ;		}
 	}
 	
-	private int zoomLevel =0;
-	public void zoom(boolean zoomIn, boolean zoomLeft){
+	private int zoomLevel=0;
+	private Dimension rPos = new Dimension(0,0);
+	private Dimension rSize = new Dimension(100,30);
+	public void zoom(boolean zoomIn, boolean zoomLeft, boolean zoomUp){
 		if (zoomLevel==0 && !zoomIn){
 			return;
 		}
-		//TODO: Implement Zoom Ha ha
-		System.out.println("ZoomIn: "+zoomIn+" left "+zoomLeft);
+		if (zoomIn){
+			zoomLevel++;
+			rSize.width/=2;
+			rSize.height/=2;
+			if (!zoomLeft){
+				rPos.width+=rSize.width;
+			}
+			if (!zoomUp){
+				rPos.height+=rSize.height;
+			}
+		}
+		else{
+			zoomLevel--;
+			rSize.width*=2;
+			rSize.height*=2;
+			if (rPos.width+rSize.width>100){
+				rPos.width=(100-rSize.width);
+			}
+			if (rPos.height+rSize.height>100){
+				rPos.height=(100-rSize.height);			}
+		}
+		this.refresh();
 	}
 	
 	public void showSheet(Sheet s){
@@ -86,14 +111,26 @@ public class PreviewPanel extends JPanel implements Runnable, ComponentListener,
 		else{
 			try {
 				Dimension size = this.getSize();
+				if (size.width == 0 && size.height == 0){
+					size = new Dimension(300,60);
+				}
 				this.widget.setText("...lade...");
 				this.widget.setIcon(null);
 				this.repaint();
 				System.out.print("loading...");
+				//Bildgrösse
 				int width = (int) (size.getWidth()*0.8);
 				int height =  (int) (size.getHeight()*0.8);
-				int relheight = 100*height/width;
-				this.image = sheet.getPreview(new Dimension(100,relheight), new Dimension(width,height));
+				
+				//Passe relative höhe an um in Bildgrösse zu bleiben
+				this.rSize.height = this.rSize.width*height/width;
+				if (rPos.height<0){
+					rPos.height=0;
+				}
+				else if (rPos.height+rSize.height>100){
+					rPos.height=100-rSize.height;
+				}
+				this.image = sheet.getPreview(rPos, rSize, new Dimension(width,height));
 				System.out.print("done...");
 				widget.setText("");
 				widget.setIcon(new ImageIcon(this.image));
@@ -133,7 +170,8 @@ public class PreviewPanel extends JPanel implements Runnable, ComponentListener,
 			zoomIn=true;
 		}
 		boolean zoomLeft = (e.getPoint().x<=this.getSize().width/2);
-		this.zoom(zoomIn,zoomLeft);
+		boolean zoomUp = (e.getPoint().y<=this.getSize().height/2);
+		this.zoom(zoomIn,zoomLeft,zoomUp);
 	}
 
 	@Override
@@ -150,5 +188,20 @@ public class PreviewPanel extends JPanel implements Runnable, ComponentListener,
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		Dimension oldpos = new Dimension(rPos);
+		rPos.height=rPos.height+e.getWheelRotation()*(rSize.height/3);
+		if (rPos.height<0){
+			rPos.height=0;
+		}
+		else if (rPos.height+rSize.height>100){
+			rPos.height=100-rSize.height;
+		}
+		if (!oldpos.equals(rPos)){
+			this.refresh();
+		}
 	}
 }

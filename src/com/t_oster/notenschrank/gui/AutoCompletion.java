@@ -144,21 +144,21 @@ public class AutoCompletion extends PlainDocument {
 		Object item = lookupItem(getText(0, getLength()));
 		if (item != null) {
 			setSelectedItem(item);
+			setText(item.toString());
+			// select the completed part
+			highlightCompletedText(offs + str.length());
 		} else {
+			//setText(item.toString());
 			// keep old item selected if there is no match
-			item = comboBox.getSelectedItem();
+			//item = comboBox.getSelectedItem();
 			// imitate no insert (later on offs will be incremented by
 			// str.length(): selection won't move forward)
-			offs = offs - str.length();
+			//offs = offs - str.length();
 			// provide feedback to the user that his input has been received but
 			// can not be accepted
-			comboBox.getToolkit().beep(); // when available use:
+			//comboBox.getToolkit().beep(); // when available use:
 											// UIManager.getLookAndFeel().provideErrorFeedback(comboBox);
-		}
-		if (item!=null)
-			setText(item.toString());
-		// select the completed part
-		highlightCompletedText(offs + str.length());
+		}	
 	}
 
 	private void setText(String text) {

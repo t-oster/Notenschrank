@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.security.InvalidParameterException;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -56,9 +57,10 @@ public class Sheet {
 	/*
 	 * Note: works only correct for pages rotated 0 or 180 degree
 	 */
-	public Image getPreview(Dimension percent, Dimension imagesize) throws IOException{
-		if (percent==null){
-			percent = new Dimension(100,100);
+	public Image getPreview(Dimension relPosition, Dimension relSize, Dimension imagesize) throws IOException{
+		
+		if (relPosition.width+relSize.width>100 || relPosition.height+relSize.height>100){
+			throw new InvalidParameterException("We have just 100%");
 		}
 		
 		PDFFile pdffile = this.getPdfRendererPDF();
@@ -67,20 +69,22 @@ public class Sheet {
         
         //get the width and height for the doc at the default zoom
         
-        int width = (int)page.getBBox().getWidth()*percent.width/100;
-        int height =  (int)page.getBBox().getHeight()*percent.height/100;
-        int posx =(int)page.getBBox().getWidth()-width;
-        int posy =(int)page.getBBox().getHeight()-height;
-        if (page.getRotation()==180){
-        	posx=0;
-        	posy=0;
-        }
-        Rectangle rect = new Rectangle(posx,posy,
-               width,
-               height);
+        int docwidth = (int)page.getBBox().getWidth();
+        int docheight = (int)page.getBBox().getHeight();
+        
+        int abswidth = docwidth*relSize.width/100;
+        int absheight =  docheight*relSize.height/100;
+        int posx =relPosition.width*docwidth/100;
+        int posy =relPosition.height*docheight/100;
+       
+        Rectangle rect = new Rectangle(posx,docheight-posy-absheight,
+               abswidth,
+               absheight);
+        System.out.println("Rect: "+rect);
+        
         
         if (imagesize==null){
-        	imagesize = new Dimension(width,height);
+        	imagesize = new Dimension(abswidth,absheight);
         }
         
         //generate the image

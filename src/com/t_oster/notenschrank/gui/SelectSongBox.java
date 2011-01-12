@@ -16,8 +16,8 @@ public class SelectSongBox extends JComboBox {
 	
 	public SelectSongBox(){
 		super(Archive.getInstance().getAvailableSongs());
-		this.setEditable(true);
-		//AutoCompletion.enable(this);
+		//this.setEditable(true);
+		AutoCompletion.enable(this);
 	}
 	
 	public Song getSelectedSong(){
@@ -36,10 +36,12 @@ public class SelectSongBox extends JComboBox {
 	
 	public void reload(){
 		if (reloadImportant){
+			int i=this.getSelectedIndex();
 			this.removeAllItems();
 			for (Song s:Archive.getInstance().getAvailableSongs()){
 				this.addItem(s);
 			}
+			this.setSelectedIndex(i);
 			reloadImportant=false;
 		}
 		else{

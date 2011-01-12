@@ -1,6 +1,7 @@
 package com.t_oster.notenschrank.gui;
 
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -11,6 +12,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -45,6 +47,7 @@ public class SortingFrame extends JDialog implements ActionListener{
 		this.cbSong.setMaximumSize(new Dimension(500,35));
 		this.cbVoice = new SelectVoiceBox();
 		this.cbVoice.setMaximumSize(new Dimension(500,35));
+		
 		this.bOk = new JButton("Speichern");
 		this.bOk.addActionListener(this);
 		this.bAddPage = new JButton("weitere Seite");
@@ -56,11 +59,29 @@ public class SortingFrame extends JDialog implements ActionListener{
 		this.mainPanel = new JPanel();
 		this.mainPanel.setLayout(new BoxLayout(this.mainPanel, BoxLayout.Y_AXIS));
 		Box b = Box.createHorizontalBox();
-		b.add(this.previewpanel);
-		b.add(this.current);
+		b.add(Box.createHorizontalGlue());
+		b.add(new JLabel("nächstes Blatt"));
+		b.add(Box.createHorizontalGlue());
+		b.add(new JLabel("aktuelles Blatt"));
+		b.add(Box.createHorizontalGlue());
 		this.mainPanel.add(b);
-		this.mainPanel.add(cbSong);
-		this.mainPanel.add(cbVoice);
+		JPanel previewContainer = new JPanel();
+		previewContainer.setLayout(new GridLayout(1,2));
+		previewContainer.add(this.previewpanel);
+		previewContainer.add(this.current);
+		this.mainPanel.add(previewContainer);
+		b=Box.createHorizontalBox();
+		b.add(Box.createHorizontalGlue());
+		b.add(new JLabel("Lied:"));
+		b.add(cbSong);
+		b.add(Box.createHorizontalGlue());
+		this.mainPanel.add(b);
+		b=Box.createHorizontalBox();
+		b.add(Box.createHorizontalGlue());
+		b.add(new JLabel("Stimme:"));
+		b.add(cbVoice);
+		b.add(Box.createHorizontalGlue());
+		this.mainPanel.add(b);
 		Box box = Box.createHorizontalBox();
 		box.add(bRotatePage);
 		box.add(bAddPage);
@@ -75,7 +96,7 @@ public class SortingFrame extends JDialog implements ActionListener{
 		try{
 			this.stackSheets = Archive.getInstance().getUnsortedSheets();
 			if (stackSheets.size()==0){
-				JOptionPane.showConfirmDialog(null, "Keine Noten zum sortieren vorhanden\nBitte scannen Sie zuerst welche ein");
+				JOptionPane.showMessageDialog(null, "Keine Noten zum sortieren vorhanden\nBitte scannen Sie zuerst welche ein", "Nix da.", JOptionPane.OK_OPTION);
 				this.dispose();
 				return;
 			}
@@ -95,70 +116,80 @@ public class SortingFrame extends JDialog implements ActionListener{
 		
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if (e.getSource().equals(this.bRotatePage)){
-			try {
-				Sheet s = this.current.getSheet();
-				s.rotatePage(s.numberOfPages(), 1);
+	private void rotateClicked(){
+		try {
+			Sheet s = this.current.getSheet();
+			s.rotatePage(s.numberOfPages(), 1);
+			this.current.refresh();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (DocumentException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+	
+	private void addClicked(){
+		try {
+			Sheet current = this.current.getSheet();
+			Sheet preview = this.previewpanel.getSheet();
+			if (preview != null){
+				current.addPage(this.previewpanel.getSheet());
 				this.current.refresh();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (DocumentException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			
-		}
-		else if (e.getSource().equals(this.bAddPage)){
-			try {
-				Sheet current = this.current.getSheet();
-				Sheet preview = this.previewpanel.getSheet();
-				if (preview != null){
-					current.addPage(this.previewpanel.getSheet());
-					this.current.refresh();
-					preview.delete();
-					if (this.stackSheets.size()>0){
-						this.previewpanel.showSheet(this.stackSheets.remove(0));
-					}
-					else{
-						this.previewpanel.showSheet(null);
-					}
-				}
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (DocumentException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
-		else if (e.getSource().equals(this.bOk)){
-			Sheet s = current.getSheet();
-			Song song = cbSong.getSelectedSong();
-			Voice v = cbVoice.getSelectedVoice();
-			try {
-				Archive.getInstance().addToArchive(s, song, v);
-				s.delete();
-				cbSong.reload();
-				cbVoice.reload();
-				Sheet p = previewpanel.getSheet();
-				this.current.showSheet(p);
+				preview.delete();
 				if (this.stackSheets.size()>0){
 					this.previewpanel.showSheet(this.stackSheets.remove(0));
 				}
 				else{
 					this.previewpanel.showSheet(null);
 				}
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (DocumentException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
 			}
-			
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (DocumentException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+	
+	private void okClicked(){
+		Sheet s = current.getSheet();
+		Song song = cbSong.getSelectedSong();
+		Voice v = cbVoice.getSelectedVoice();
+		try {
+			Archive.getInstance().addToArchive(s, song, v);
+			s.delete();
+			cbSong.reload();
+			cbVoice.reload();
+			Sheet p = previewpanel.getSheet();
+			this.current.showSheet(p);
+			if (this.stackSheets.size()>0){
+				this.previewpanel.showSheet(this.stackSheets.remove(0));
+			}
+			else{
+				this.previewpanel.showSheet(null);
+			}
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (DocumentException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource().equals(this.bRotatePage)){
+			this.rotateClicked();
+		}
+		else if (e.getSource().equals(this.bAddPage)){
+			this.addClicked();
+		}
+		else if (e.getSource().equals(this.bOk)){
+			this.okClicked();	
 		}
 	}
 }

@@ -22,20 +22,28 @@ import com.t_oster.notenschrank.data.Sheet;
 public class SheetTest {
 	@Test
 	public void getImageTest() throws IOException{
-		
-		//show the image in a frame
-        JFrame frame = new JFrame("PDF Test");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         Sheet sheet = new Sheet(new File("data//b.pdf"));
-        Image img = sheet.getPreview(new Dimension(100,30), new Dimension(300,200));
+        Image img = sheet.getPreview(new Dimension(0,0), new Dimension(100,50), new Dimension(300,150));
         assertEquals(img.getWidth(null),300);
-        assertEquals(img.getHeight(null),200);
+        assertEquals(img.getHeight(null),150);
         assertNotNull(img);
-        
-		frame.add(new JLabel(new ImageIcon(img)));
-        frame.pack();
-        frame.setVisible(true);
-        JOptionPane.showMessageDialog(null, "you should see the PDF stuff", "bla", JOptionPane.OK_OPTION);
+        JOptionPane.showMessageDialog(null, new JLabel(new ImageIcon(img)), "bla", JOptionPane.OK_OPTION);
+        img = sheet.getPreview(new Dimension(0,0), new Dimension(100,100), new Dimension(300,150));
+        assertNotNull(img);
+        JOptionPane.showMessageDialog(null, new JLabel(new ImageIcon(img)), "bla", JOptionPane.OK_OPTION);
+        img = sheet.getPreview(new Dimension(0,0), new Dimension(50,50), new Dimension(300,150));
+        assertNotNull(img);
+        JOptionPane.showMessageDialog(null, new JLabel(new ImageIcon(img)), "bla", JOptionPane.OK_OPTION);
+        img = sheet.getPreview(new Dimension(50,0), new Dimension(50,50), new Dimension(300,150));
+        assertNotNull(img);
+        JOptionPane.showMessageDialog(null, new JLabel(new ImageIcon(img)), "bla", JOptionPane.OK_OPTION);
+        img = sheet.getPreview(new Dimension(0,50), new Dimension(50,50), new Dimension(300,150));
+        assertNotNull(img);
+        JOptionPane.showMessageDialog(null, new JLabel(new ImageIcon(img)), "bla", JOptionPane.OK_OPTION);
+        img = sheet.getPreview(new Dimension(50,50), new Dimension(50,50), new Dimension(300,150));
+        assertNotNull(img);
+        JOptionPane.showMessageDialog(null, new JLabel(new ImageIcon(img)), "bla", JOptionPane.OK_OPTION);
 	}
 	
 	@After
@@ -74,7 +82,7 @@ public class SheetTest {
 		//show the image in a frame
         JFrame frame = new JFrame("PDF Test");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        Image img = s.getPreview(new Dimension(100,30), new Dimension(300,200));
+        Image img = s.getPreview(new Dimension(0,0), new Dimension(100,30), new Dimension(300,200));
         assertEquals(img.getWidth(null),300);
         assertEquals(img.getHeight(null),200);
         assertNotNull(img);
@@ -85,7 +93,7 @@ public class SheetTest {
         frame.setVisible(true);
         JOptionPane.showMessageDialog(null, "you should see the PDF stuff", "bla", JOptionPane.OK_OPTION);
         s.rotatePage(1, 1);
-        img = s.getPreview(new Dimension(100,30), new Dimension(300,200));
+        img = s.getPreview(new Dimension(0,0), new Dimension(100,30), new Dimension(300,200));
         assertEquals(img.getWidth(null),300);
         assertEquals(img.getHeight(null),200);
         assertNotNull(img);

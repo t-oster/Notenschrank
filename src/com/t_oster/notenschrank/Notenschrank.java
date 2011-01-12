@@ -12,7 +12,7 @@ import com.t_oster.notenschrank.gui.SortingFrame;
 public class Notenschrank implements ActionListener{
 	
 	private MainFrame mainFrame;
-	private Notenschrank(){
+	public Notenschrank(){
 		if (!SettingsManager.getInstance().getArchivePath().exists()){
 			if (JOptionPane.showConfirmDialog(null, "Fehler: Der Archivordner '"+SettingsManager.getInstance().getArchivePath()+"' wurde nicht gefunden\n"
 					+"Soll ein neuer angelegt werden?", "Fehler", JOptionPane.YES_NO_OPTION)==JOptionPane.NO_OPTION){
@@ -48,6 +48,7 @@ public class Notenschrank implements ActionListener{
 	public static void main(String[] args) {
 		//javax.swing.JFrame.setDefaultLookAndFeelDecorated(true);
 		new Notenschrank();
+		
 	}
 	
 	private void showScanWizzard(){
