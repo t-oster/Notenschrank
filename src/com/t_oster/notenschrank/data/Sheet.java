@@ -63,7 +63,7 @@ public class Sheet {
 		
 		PDFFile pdffile = this.getPdfRendererPDF();
         // draw the first page to an image
-        PDFPage page = pdffile.getPage(0);
+        PDFPage page = pdffile.getPage(pdffile.getNumPages());
         
         //get the width and height for the doc at the default zoom
         
@@ -112,8 +112,11 @@ public class Sheet {
 		this.writeToFile(tmp);
 		PdfReader reader = new PdfReader(tmp.getAbsolutePath());
 		for (int k = 1; k <= reader.getNumberOfPages(); k++) {
+			//TODO: Check Nullpointer Exception.
 			if (k==page){
-				reader.getPageN(k).put(PdfName.ROTATE, new PdfNumber(90*quarters));
+				PdfNumber n = (PdfNumber) reader.getPageN(k).get(PdfName.ROTATE);
+				reader.getPageN(k).put(PdfName.ROTATE, new PdfNumber((n.intValue()+
+						+90*quarters)%360));
 			}
 		}
 		FileOutputStream stream =  new FileOutputStream(pdf_file);
@@ -127,6 +130,12 @@ public class Sheet {
 	private void reset(){
 		this.pdf_renderer_pdf = null;
 		this.itext_reader = null;
+	}
+	
+	public void delete(){
+		this.pdf_file.delete();
+		this.pdf_file=null;
+		this.itext_reader=null;
 	}
 	
 	public void addPage(Sheet s) throws IOException, DocumentException{

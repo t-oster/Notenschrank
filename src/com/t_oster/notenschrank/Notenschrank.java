@@ -51,7 +51,7 @@ public class Notenschrank implements ActionListener{
 	}
 	
 	private void showScanWizzard(){
-		new SortingFrame(mainFrame).waitForClose();
+		new SortingFrame(mainFrame).showDialog();
 		//sortingFrame.addActionListener(this);
 	}
 	

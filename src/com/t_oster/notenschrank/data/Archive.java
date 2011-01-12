@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import com.itextpdf.text.DocumentException;
@@ -104,14 +105,14 @@ public class Archive {
 		}
 	}
 	
-	public Sheet[] getUnsortedSheets() throws IOException{
+	public List<Sheet> getUnsortedSheets() throws IOException{
 		LinkedList<Sheet> result = new LinkedList<Sheet>();
 		for(File f:SettingsManager.getInstance().getStackPath().listFiles()){
 			if (f.isFile()){
 				result.add(new Sheet(f));
 			}
 		}
-		return result.toArray(new Sheet[0]);
+		return result;
 	}
 	
 	public boolean contains(Song s, Voice v){
@@ -119,6 +120,10 @@ public class Archive {
 	}
 	
 	public void addToArchive(Sheet s, Song song, Voice v) throws IOException, DocumentException{
+		File dir = calculatePath(song);
+		if (!dir.exists()){
+			dir.mkdirs();
+		}
 		File target = calculatePath(song,v);
 		s.writeToFile(target);
 	}
