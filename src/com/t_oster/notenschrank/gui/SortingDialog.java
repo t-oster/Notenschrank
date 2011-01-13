@@ -23,7 +23,7 @@ import com.t_oster.notenschrank.data.Sheet;
 import com.t_oster.notenschrank.data.Song;
 import com.t_oster.notenschrank.data.Voice;
 
-public class SortingFrame extends JDialog implements ActionListener{
+public class SortingDialog extends JDialog implements ActionListener{
 	
 	/**
 	 * 
@@ -39,8 +39,9 @@ public class SortingFrame extends JDialog implements ActionListener{
 	private JButton bRotatePage;
 	private List<Sheet> stackSheets;
 
-	public SortingFrame(JFrame parent){
+	public SortingDialog(JFrame parent){
 		super(parent,"Notenschrank "+SettingsManager.getInstance().getProgramVersion());
+		this.setPreferredSize(new Dimension(800,600));
 		this.previewpanel = new PreviewPanel(this);
 		this.current = new PreviewPanel(this);
 		this.cbSong = new SelectSongBox();
@@ -50,7 +51,7 @@ public class SortingFrame extends JDialog implements ActionListener{
 		
 		this.bOk = new JButton("Speichern");
 		this.bOk.addActionListener(this);
-		this.bAddPage = new JButton("weitere Seite");
+		this.bAddPage = new JButton("nächste Seite gehört dazu");
 		this.bAddPage.addActionListener(this);
 		this.bRotatePage = new JButton("Seite drehen");
 		this.bRotatePage.addActionListener(this);
@@ -72,7 +73,7 @@ public class SortingFrame extends JDialog implements ActionListener{
 		this.mainPanel.add(previewContainer);
 		b=Box.createHorizontalBox();
 		b.add(Box.createHorizontalGlue());
-		b.add(new JLabel("Lied:"));
+		b.add(new JLabel("Lied:      "));
 		b.add(cbSong);
 		b.add(Box.createHorizontalGlue());
 		this.mainPanel.add(b);
@@ -83,12 +84,14 @@ public class SortingFrame extends JDialog implements ActionListener{
 		b.add(Box.createHorizontalGlue());
 		this.mainPanel.add(b);
 		Box box = Box.createHorizontalBox();
-		box.add(bRotatePage);
+		//TODO: Next Button deaktivieren wenn kein Blatt mehr da
 		box.add(bAddPage);
+		box.add(bRotatePage);
 		box.add(bOk);
 		this.mainPanel.add(box);
 		this.setContentPane(mainPanel);
 		this.pack();
+		this.setLocationRelativeTo(null);
 	}
 	
 	public void showDialog(){
@@ -105,6 +108,9 @@ public class SortingFrame extends JDialog implements ActionListener{
 			if (stackSheets.size()>0){
 				Sheet nxt = stackSheets.remove(0);
 				this.previewpanel.showSheet(nxt);
+			}
+			else{
+				bAddPage.setEnabled(false);
 			}
 			this.setModal(true);
 			//bocks invoking Thread until disposed
@@ -143,6 +149,7 @@ public class SortingFrame extends JDialog implements ActionListener{
 				}
 				else{
 					this.previewpanel.showSheet(null);
+					this.bAddPage.setEnabled(false);
 				}
 			}
 		} catch (IOException e1) {
@@ -158,11 +165,13 @@ public class SortingFrame extends JDialog implements ActionListener{
 		Sheet s = current.getSheet();
 		Song song = cbSong.getSelectedSong();
 		Voice v = cbVoice.getSelectedVoice();
+		if (song==null || v==null){
+			JOptionPane.showMessageDialog(this, "Sie müssen sowohl Titel als auch Stimme eingeben", "Fehler", JOptionPane.OK_OPTION);
+			return;
+		}
 		try {
 			Archive.getInstance().addToArchive(s, song, v);
 			s.delete();
-			cbSong.reload();
-			cbVoice.reload();
 			Sheet p = previewpanel.getSheet();
 			this.current.showSheet(p);
 			if (this.stackSheets.size()>0){
@@ -170,6 +179,7 @@ public class SortingFrame extends JDialog implements ActionListener{
 			}
 			else{
 				this.previewpanel.showSheet(null);
+				this.bAddPage.setEnabled(false);
 			}
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block

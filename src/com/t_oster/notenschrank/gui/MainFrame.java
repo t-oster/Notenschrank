@@ -1,6 +1,7 @@
 package com.t_oster.notenschrank.gui;
 
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -11,6 +12,7 @@ import java.util.List;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import com.t_oster.notenschrank.data.SettingsManager;
 
@@ -30,6 +32,7 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener{
 	private static final long serialVersionUID = -5200598004775043020L;
 	private JButton btScan;
 	private JButton btPrint;
+	private JButton btSettings;
 	private List<ActionListener> lListeners;
 	
 	public MainFrame(){
@@ -41,19 +44,25 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener{
 		//initialize Attributes
 		btScan = new JButton("Noten einsortieren");
 		btPrint = new JButton("Noten ausdrucken");
+		btSettings = new JButton("Einstellungen");
 		lListeners = new LinkedList<ActionListener>();
 		
 		//initialize Listeners
 		btScan.addActionListener(this);
 		btPrint.addActionListener(this);
+		btSettings.addActionListener(this);
 		this.addWindowListener(this);
 		
 		//layout & look and Feel
-		Box b = Box.createVerticalBox();
+		JPanel b = new JPanel();
+		b.setLayout(new GridLayout(0,1));
 		b.add(btScan);
 		b.add(btPrint);
+		b.add(btSettings);
 		this.setContentPane(b);
-		this.setMinimumSize(new Dimension(200,90));
+		//this.setMinimumSize(new Dimension(200,90));
+		this.pack();
+		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 	}
 

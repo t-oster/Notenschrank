@@ -10,10 +10,13 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.IOException;
+import java.security.InvalidParameterException;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.BevelBorder;
 
 import com.t_oster.notenschrank.data.Sheet;
 
@@ -30,6 +33,7 @@ public class PreviewPanel extends JPanel implements Runnable, ComponentListener,
 	private boolean refreshing=false;
 	
 	public PreviewPanel(Component parent){
+		this.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 		widget = new JLabel("keine Datei zum einsortieren");
 		this.add(widget);
 		this.validate();
@@ -62,8 +66,8 @@ public class PreviewPanel extends JPanel implements Runnable, ComponentListener,
 		}
 		else{
 			zoomLevel--;
-			rSize.width*=2;
-			rSize.height*=2;
+			rSize.width=(2*rSize.width)%101;
+			rSize.height=(2*rSize.height)%101;
 			if (rPos.width+rSize.width>100){
 				rPos.width=(100-rSize.width);
 			}
@@ -117,7 +121,6 @@ public class PreviewPanel extends JPanel implements Runnable, ComponentListener,
 				this.widget.setText("...lade...");
 				this.widget.setIcon(null);
 				this.repaint();
-				System.out.print("loading...");
 				//Bildgrösse
 				int width = (int) (size.getWidth()*0.8);
 				int height =  (int) (size.getHeight()*0.8);
@@ -127,18 +130,24 @@ public class PreviewPanel extends JPanel implements Runnable, ComponentListener,
 				if (rPos.height<0){
 					rPos.height=0;
 				}
-				else if (rPos.height+rSize.height>100){
+				if (rPos.height>100){
+					rPos.height=100;
+				}
+				if (rPos.height+rSize.height>100){
 					rPos.height=100-rSize.height;
 				}
 				this.image = sheet.getPreview(rPos, rSize, new Dimension(width,height));
-				System.out.print("done...");
 				widget.setText("");
 				widget.setIcon(new ImageIcon(this.image));
-				size=null;
 			} catch (IOException e) {
 				this.widget.setIcon(null);
 				this.widget.setText("Fehler beim Anzeigen...\n"+e.getMessage());
+			} catch (InvalidParameterException e){
+				System.err.println(e.getMessage());
+				widget.setText("");
+				widget.setIcon(null);
 			}
+			
 		}
 		this.repaint();
 		synchronized(this){

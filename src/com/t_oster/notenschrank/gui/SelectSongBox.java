@@ -10,9 +10,7 @@ public class SelectSongBox extends JComboBox {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 5468068515401007273L;
-	private boolean reloadImportant=false;
-	
+	private static final long serialVersionUID = 5468068515401007273L;	
 	
 	public SelectSongBox(){
 		super(Archive.getInstance().getAvailableSongs());
@@ -26,26 +24,15 @@ public class SelectSongBox extends JComboBox {
 			return (Song) o;
 		}
 		else if(o != null && o.toString() != ""){//not in the List yet
-			reloadImportant = true;
-			return new Song(o.toString());
+			Song s = new Song(o.toString());
+			this.addItem(s);
+			//TODO: sort
+			this.setSelectedItem(s);
+			return s;
 		}
 		else{
 			return null;
 		}
 	}
 	
-	public void reload(){
-		if (reloadImportant){
-			int i=this.getSelectedIndex();
-			this.removeAllItems();
-			for (Song s:Archive.getInstance().getAvailableSongs()){
-				this.addItem(s);
-			}
-			this.setSelectedIndex(i);
-			reloadImportant=false;
-		}
-		else{
-			System.out.println("reload dropped");
-		}
-	}
 }
