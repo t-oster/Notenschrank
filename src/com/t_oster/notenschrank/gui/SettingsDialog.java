@@ -47,22 +47,26 @@ public class SettingsDialog extends JPanel {
 		Map<String, Integer> map = SettingsManager.getInstance().getPredefinedNumbers();
 		Voice[] voices = Archive.getInstance().getAvailableVoices();
 		numberFields = new LinkedHashMap<String, JTextField>();
-		for (Entry<String, Integer> e:map.entrySet()){
-			this.add(new JLabel("Standard Anzahl für "));
-			this.add(new JLabel(e.getKey()));
-			JTextField tf = new JTextField();
-			tf.setText(e.getValue().toString());
-			this.add(tf);
-			numberFields.put(e.getKey().toString(),tf);
-		}
-		for (Voice v:voices){
-			if (!numberFields.containsKey(v.toString())){
+		if (map!=null && map.size()>0){
+			for (Entry<String, Integer> e:map.entrySet()){
 				this.add(new JLabel("Standard Anzahl für "));
-				this.add(new JLabel(v.toString()));
+				this.add(new JLabel(e.getKey()));
 				JTextField tf = new JTextField();
-				tf.setText("1");
+				tf.setText(e.getValue().toString());
 				this.add(tf);
-				numberFields.put(v.toString(),tf);
+				numberFields.put(e.getKey().toString(),tf);
+			}
+		}
+		if (voices != null && voices.length >0){
+			for (Voice v:voices){
+				if (!numberFields.containsKey(v.toString())){
+					this.add(new JLabel("Standard Anzahl für "));
+					this.add(new JLabel(v.toString()));
+					JTextField tf = new JTextField();
+					tf.setText("1");
+					this.add(tf);
+					numberFields.put(v.toString(),tf);
+				}
 			}
 		}
 		

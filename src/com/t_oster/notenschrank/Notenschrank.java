@@ -16,10 +16,17 @@ public class Notenschrank implements ActionListener{
 	
 	private MainFrame mainFrame;
 	private boolean running=true;
-	public Notenschrank(){
+	
+	private void checkPaths(){
 		if (!SettingsManager.getInstance().getArchivePath().exists()){
-			if (JOptionPane.showConfirmDialog(null, "Fehler: Der Archivordner '"+SettingsManager.getInstance().getArchivePath()+"' wurde nicht gefunden\n"
-					+"Soll ein neuer angelegt werden?", "Fehler", JOptionPane.YES_NO_OPTION)==JOptionPane.NO_OPTION){
+			
+			int response = JOptionPane.showConfirmDialog(null, "Fehler: Der Archivordner '"+SettingsManager.getInstance().getArchivePath()+"' wurde nicht gefunden\n"
+					+"Soll ein neuer angelegt werden?", "Fehler", JOptionPane.YES_NO_CANCEL_OPTION);
+			if (response==JOptionPane.NO_OPTION){
+				SettingsDialog.showDialog(mainFrame, "Einstellungen");
+				checkPaths();
+			}
+			else if (response==JOptionPane.CANCEL_OPTION){
 				System.exit(0);
 			}
 			else{
@@ -30,8 +37,13 @@ public class Notenschrank implements ActionListener{
 			}
 		}
 		if (!SettingsManager.getInstance().getStackPath().exists()){
-			if (JOptionPane.showConfirmDialog(null, "Fehler: Der Scannerordner '"+SettingsManager.getInstance().getStackPath()+"' wurde nicht gefunden\n"
-					+"Soll ein neuer angelegt werden?", "Fehler", JOptionPane.YES_NO_OPTION)==JOptionPane.NO_OPTION){
+			int response = JOptionPane.showConfirmDialog(null, "Fehler: Der Scannerordner '"+SettingsManager.getInstance().getStackPath()+"' wurde nicht gefunden\n"
+					+"Soll ein neuer angelegt werden?", "Fehler", JOptionPane.YES_NO_CANCEL_OPTION);
+			if (response==JOptionPane.NO_OPTION){
+				SettingsDialog.showDialog(mainFrame, "Einstellungen");
+				checkPaths();
+			}
+			else if (response==JOptionPane.CANCEL_OPTION){
 				System.exit(0);
 			}
 			else{
@@ -41,8 +53,13 @@ public class Notenschrank implements ActionListener{
 				}
 			}
 		}
+	}
+	
+	public Notenschrank(){
+		
 		this.mainFrame = new MainFrame();
 		this.mainFrame.addActionListener(this);
+		this.checkPaths();
 	}
 	
 	
