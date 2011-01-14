@@ -16,6 +16,7 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.border.BevelBorder;
 
 import com.t_oster.notenschrank.data.Sheet;
@@ -123,6 +124,9 @@ public class PreviewPanel extends JPanel implements Runnable, ComponentListener,
 				if (size.width == 0 && size.height == 0){
 					size = new Dimension(300,60);
 				}
+				JProgressBar tmp = new JProgressBar();
+				tmp.setIndeterminate(true);
+				this.add(tmp);
 				this.widget.setText("...lade...");
 				this.widget.setIcon(null);
 				this.repaint();
@@ -142,8 +146,10 @@ public class PreviewPanel extends JPanel implements Runnable, ComponentListener,
 					rPos.height=100-rSize.height;
 				}
 				this.image = sheet.getPreview(rPos, rSize, new Dimension(width,height));
+				this.remove(tmp);
 				widget.setText("");
 				widget.setIcon(new ImageIcon(this.image));
+				
 			} catch (IOException e) {
 				this.widget.setIcon(null);
 				this.widget.setText("Fehler beim Anzeigen...\n"+e.getMessage());
