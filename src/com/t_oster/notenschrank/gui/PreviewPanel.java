@@ -46,6 +46,11 @@ public class PreviewPanel extends JPanel implements Runnable, ComponentListener,
 ;		}
 	}
 	
+	public PreviewPanel(Component parent, Sheet sheet) {
+		this(parent);
+		this.showSheet(sheet);
+	}
+
 	private int zoomLevel=0;
 	private Dimension rPos = new Dimension(0,0);
 	private Dimension rSize = new Dimension(100,30);

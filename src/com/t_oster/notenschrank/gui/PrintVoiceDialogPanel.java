@@ -1,24 +1,21 @@
 package com.t_oster.notenschrank.gui;
 
-import java.awt.Component;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.LinkedList;
 
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
 import javax.swing.JTable;
-import javax.swing.SpinnerListModel;
 import javax.swing.table.AbstractTableModel;
 
 import com.t_oster.notenschrank.data.Archive;
 import com.t_oster.notenschrank.data.Sheet;
 import com.t_oster.notenschrank.data.Song;
-import com.t_oster.notenschrank.data.Voice;
 
 public class PrintVoiceDialogPanel extends JPanel{
 	/**
@@ -28,8 +25,7 @@ public class PrintVoiceDialogPanel extends JPanel{
 	private SelectVoiceBox bVoice;
 	private JTable tSongs;
 	private AbstractTableModel tSongsModel;
-	//private JSpinner sNumber;
-	//private SpinnerListModel lm;
+	private JCheckBox cbPreview;
 	private Song[] availableSongs;
 	private boolean[] selectedNumbers;
 	
@@ -37,6 +33,8 @@ public class PrintVoiceDialogPanel extends JPanel{
 	public PrintVoiceDialogPanel(){
 		//this.setLayout(new GridLayout(0,2));
 		bVoice = new SelectVoiceBox(false);
+		availableSongs = Archive.getInstance().getAvailableSongs(bVoice.getSelectedVoice());
+		selectedNumbers = new boolean[availableSongs.length];
 		bVoice.addActionListener(new ActionListener(){
 
 			@Override
@@ -48,6 +46,11 @@ public class PrintVoiceDialogPanel extends JPanel{
 			
 		});
 		tSongsModel = new AbstractTableModel(){
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -1328906876906673675L;
 
 			public String getColumnName(int column){
 				return column==0?"Stimme":"auswählen";
@@ -69,6 +72,7 @@ public class PrintVoiceDialogPanel extends JPanel{
 				return 2;
 			}
 
+			@SuppressWarnings("unchecked")
 			public Class getColumnClass(int c) {
 			        return getValueAt(0, c).getClass();
 			}
@@ -90,12 +94,30 @@ public class PrintVoiceDialogPanel extends JPanel{
 			
 		};
 		tSongs = new JTable(tSongsModel);
-		//lm=new SpinnerListModel(new String[]{"1","2","3","4","5","6","7","8","9","10"});
-		//sNumber = new JSpinner(lm);
-		add(new JLabel("Stück"));
-		add(bVoice);
 		tSongs.setFillsViewportHeight(true);
+		cbPreview = new JCheckBox("Druckvorschau");
+		
+		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		JPanel tmp = new JPanel();
+		tmp.add(new JLabel("Stück"));
+		tmp.add(bVoice);
+		add(tmp);
 		add(new JScrollPane(tSongs));
+		add(cbPreview);
+	}
+	
+	public boolean isPreviewSelected(){
+		return cbPreview.isSelected();
+	}
+	
+	public Sheet[] getSelectedSheets() throws IOException{
+		LinkedList<Sheet> result = new LinkedList<Sheet>();
+		for (int i=0;i<availableSongs.length;i++){
+			if (selectedNumbers[i]){
+				result.add(Archive.getInstance().getSheet(availableSongs[i], bVoice.getSelectedVoice()));
+			}
+		}
+		return result.toArray(new Sheet[0]);
 	}
 	
 }

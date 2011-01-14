@@ -14,6 +14,7 @@ import com.t_oster.notenschrank.gui.SortingDialog;
 public class Notenschrank implements ActionListener{
 	
 	private MainFrame mainFrame;
+	private boolean running=true;
 	public Notenschrank(){
 		if (!SettingsManager.getInstance().getArchivePath().exists()){
 			if (JOptionPane.showConfirmDialog(null, "Fehler: Der Archivordner '"+SettingsManager.getInstance().getArchivePath()+"' wurde nicht gefunden\n"
@@ -54,8 +55,18 @@ public class Notenschrank implements ActionListener{
 		} catch (Exception e) {
 			System.err.println("Couldn't load system style. running in java style");
 		}
-		new Notenschrank();
-		
+		Notenschrank ns = new Notenschrank();
+		while(ns.running){
+			try{
+				synchronized(ns.mainFrame){
+					ns.mainFrame.wait();
+				}
+			}
+			catch(InterruptedException e){
+				//nothing
+			}
+		}
+		//System.exit(0);
 	}
 	
 	private void showScanWizzard(){
@@ -74,19 +85,23 @@ public class Notenschrank implements ActionListener{
 			MainFrame.Action a = MainFrame.Action.values()[e.getID()];
 			switch (a){
 				case actionPrintClicked:{
-					mainFrame.setVisible(false);
+					//mainFrame.setVisible(false);
 					this.showPrintWizzard();
-					mainFrame.setVisible(true);
+					//mainFrame.setVisible(true);
 					break;
 				}
 				case actionScanClicked:{
-					mainFrame.setVisible(false);
+					//mainFrame.setVisible(false);
 					this.showScanWizzard();
-					mainFrame.setVisible(true);
+					//mainFrame.setVisible(true);
 					break;
 				}
 				case actionCloseClicked:{
-					System.exit(0);
+					this.running=false;
+					this.mainFrame.dispose();
+					synchronized(this.mainFrame){
+						this.mainFrame.notify();
+					}
 					break;
 				}
 			}

@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.List;
 
 import javax.swing.Box;
@@ -16,7 +15,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import com.itextpdf.text.DocumentException;
 import com.t_oster.notenschrank.data.Archive;
 import com.t_oster.notenschrank.data.SettingsManager;
 import com.t_oster.notenschrank.data.Sheet;
@@ -56,6 +54,15 @@ public class SortingDialog extends JDialog implements ActionListener{
 		this.bRotatePage = new JButton("Seite drehen");
 		this.bRotatePage.addActionListener(this);
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		
+		//ToolTips
+		bOk.setToolTipText("Speichert das aktuelle Blatt im Archiv unter dem angegeben Namen und der angegebenen Stimme");
+		bAddPage.setToolTipText("Fügt das nächste Blatt (linke Seite) zum aktuellen Blatt (rechte Seite) hinzu. Sinnvoll bei mehrseitigen Stücken");
+		bRotatePage.setToolTipText("Dreht das aktuelle Blatt (Sinnvoll wenn falschherum eingescannt)");
+		cbVoice.setToolTipText("Stimme unter der das aktuelle Blatt archiviert werden soll (zB. 1. Klarinette in Bb)");
+		cbSong.setToolTipText("Name unter dem das aktuelle Blatt archiviert werden soll. (zB. Martini)");
+		previewpanel.setToolTipText("Blatt welches als nächstes archiviert wird (Nur angezeigt damit man erkennt ob das aktuelle Blatt mehrseitig ist)");
+		current.setToolTipText("Zeigt die erste Seite des aktuellen Stücks. Zoom mit linker Maustaste in eine der 4 Ecken. Herauszoomen mit rechter Maustaste. Scrollen mit Scrollrad.");
 		
 		this.mainPanel = new JPanel();
 		this.mainPanel.setLayout(new BoxLayout(this.mainPanel, BoxLayout.Y_AXIS));
@@ -163,9 +170,22 @@ public class SortingDialog extends JDialog implements ActionListener{
 			return;
 		}
 		try {
+			JPanel existingPreview = new JPanel();
+			existingPreview.setSize(300,500);
+			existingPreview.setLayout(new BoxLayout(existingPreview, BoxLayout.Y_AXIS));
+			//TODO: Fix Layout
+			//existingPreview.add(new PreviewPanel(existingPreview, Archive.getInstance().getSheet(song,v)));
+			existingPreview.add(new JLabel( "Datei ist bereits im Archiv.\nÜberschreiben?"));
+			existingPreview.validate();
+			if (Archive.getInstance().contains(song,v) && JOptionPane.showConfirmDialog(this,existingPreview,this.getTitle(), JOptionPane.YES_NO_OPTION)==JOptionPane.NO_OPTION){
+				return;
+			}
 			Archive.getInstance().addToArchive(s, song, v);
 			s.delete();
 			Sheet p = previewpanel.getSheet();
+			if (p==null){
+				this.dispose();
+			}
 			this.current.showSheet(p);
 			if (this.stackSheets.size()>0){
 				this.previewpanel.showSheet(this.stackSheets.remove(0));
