@@ -97,7 +97,7 @@ public class SortingDialog extends JDialog implements ActionListener{
 		this.mainPanel.add(box);
 		this.setContentPane(mainPanel);
 		this.pack();
-		this.setLocationRelativeTo(null);
+		this.setLocationByPlatform(true);
 	}
 	
 	public void showDialog(){

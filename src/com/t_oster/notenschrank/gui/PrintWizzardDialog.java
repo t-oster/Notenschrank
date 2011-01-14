@@ -45,7 +45,7 @@ public class PrintWizzardDialog extends JDialog implements ActionListener {
 		b.add(bPrintVoice);
 		this.setContentPane(b);
 		this.pack();
-		this.setLocationRelativeTo(null);
+		this.setLocationByPlatform(true);
 	}
 
 	public void showDialog() {

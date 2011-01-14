@@ -21,7 +21,8 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener{
 	public enum Action{
 		actionScanClicked,
 		actionPrintClicked,
-		actionCloseClicked
+		actionCloseClicked, 
+		actionSettingsClicked
 	}
 	
 	/**
@@ -60,7 +61,7 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener{
 		this.setContentPane(b);
 		//this.setMinimumSize(new Dimension(200,90));
 		this.pack();
-		this.setLocationRelativeTo(null);
+		this.setLocationByPlatform(true);
 		this.setVisible(true);
 	}
 
@@ -83,6 +84,9 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener{
 		}
 		else if (arg0.getSource().equals(this.btPrint)){
 			this.throwActionEvent(Action.actionPrintClicked);
+		}
+		else if (arg0.getSource().equals(this.btSettings)){
+			this.throwActionEvent(Action.actionSettingsClicked);
 		}
 	}
 

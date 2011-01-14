@@ -9,6 +9,7 @@ import javax.swing.UIManager;
 import com.t_oster.notenschrank.data.SettingsManager;
 import com.t_oster.notenschrank.gui.MainFrame;
 import com.t_oster.notenschrank.gui.PrintWizzardDialog;
+import com.t_oster.notenschrank.gui.SettingsDialog;
 import com.t_oster.notenschrank.gui.SortingDialog;
 
 public class Notenschrank implements ActionListener{
@@ -94,6 +95,10 @@ public class Notenschrank implements ActionListener{
 					//mainFrame.setVisible(false);
 					this.showScanWizzard();
 					//mainFrame.setVisible(true);
+					break;
+				}
+				case actionSettingsClicked:{
+					SettingsDialog.showDialog(mainFrame, "Einstellungen");
 					break;
 				}
 				case actionCloseClicked:{

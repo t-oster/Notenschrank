@@ -3,6 +3,7 @@ package com.t_oster.notenschrank.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.Map;
 
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
@@ -13,6 +14,7 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import com.t_oster.notenschrank.data.Archive;
+import com.t_oster.notenschrank.data.SettingsManager;
 import com.t_oster.notenschrank.data.Sheet;
 import com.t_oster.notenschrank.data.Voice;
 
@@ -33,12 +35,25 @@ public class PrintSetDialogPanel extends JPanel{
 		bSong = new SelectSongBox(false);
 		availableVoices = Archive.getInstance().getAvailableVoices(bSong.getSelectedSong());
 		selectedNumbers = new int[availableVoices.length];
+		Map<String,Integer> m= SettingsManager.getInstance().getPredefinedNumbers();
+		if (m!=null && m.size()>0){
+			for (int i=0;i<availableVoices.length;i++){
+				selectedNumbers[i]=m.containsKey(availableVoices[i].toString())?m.get(availableVoices[i].toString()):1;
+			}
+		}
+		
 		bSong.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				availableVoices = Archive.getInstance().getAvailableVoices(bSong.getSelectedSong());
 				selectedNumbers = new int[availableVoices.length];
+				Map<String,Integer> m= SettingsManager.getInstance().getPredefinedNumbers();
+				if (m!=null && m.size()>0){
+					for (int i=0;i<availableVoices.length;i++){
+						selectedNumbers[i]=m.containsKey(availableVoices[i].toString())?m.get(availableVoices[i].toString()):1;
+					}
+				}
 				tVoicesModel.fireTableDataChanged();
 			}
 			
