@@ -8,11 +8,8 @@ import java.io.IOException;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerListModel;
 
 import com.t_oster.notenschrank.data.Archive;
 import com.t_oster.notenschrank.data.SettingsManager;
@@ -36,6 +33,8 @@ public class PrintWizzardDialog extends JDialog implements ActionListener{
 		bPrintVoice = new JButton("Eine komplette Mappe drucken");
 		
 		bPrintOne.addActionListener(this);
+		bPrintSong.addActionListener(this);
+		bPrintVoice.addActionListener(this);
 		
 		JPanel b = new JPanel();
 		b.setLayout(new GridLayout(0,1));
@@ -65,11 +64,28 @@ public class PrintWizzardDialog extends JDialog implements ActionListener{
 				if (s==null){
 					throw new IOException();
 				}
-				//TODO: get number and invoke Print...
-				s.print();
+				//TODO: Add Progress Window
+				//for (int i=0;i<times;i++){
+					s.openInReader();
+				//}
 			} catch (IOException e) {
+				e.printStackTrace();
 				JOptionPane.showMessageDialog(this, "Diese Stimme konnte für diesen Song nicht gefunden werden.");
 			}
+		}
+	}
+	
+	private void printSetClicked(){
+		PrintSetDialogPanel choose = new PrintSetDialogPanel();
+		if (JOptionPane.showConfirmDialog(this, choose, this.getTitle(), JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
+			//TODO...
+		}
+	}
+	
+	private void printVoiceClicked(){
+		PrintVoiceDialogPanel choose = new PrintVoiceDialogPanel();
+		if (JOptionPane.showConfirmDialog(this, choose, this.getTitle(), JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
+			//TODO...
 		}
 	}
 	
@@ -77,6 +93,12 @@ public class PrintWizzardDialog extends JDialog implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(bPrintOne)){
 			this.printOneClicked();
+		}
+		else if (e.getSource().equals(bPrintSong)){
+			this.printSetClicked();
+		}
+		else if (e.getSource().equals(bPrintVoice)){
+			this.printVoiceClicked();
 		}
 	}
 }

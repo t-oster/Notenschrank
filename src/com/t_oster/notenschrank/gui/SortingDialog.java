@@ -84,7 +84,6 @@ public class SortingDialog extends JDialog implements ActionListener{
 		b.add(Box.createHorizontalGlue());
 		this.mainPanel.add(b);
 		Box box = Box.createHorizontalBox();
-		//TODO: Next Button deaktivieren wenn kein Blatt mehr da
 		box.add(bAddPage);
 		box.add(bRotatePage);
 		box.add(bOk);
@@ -127,13 +126,10 @@ public class SortingDialog extends JDialog implements ActionListener{
 			Sheet s = this.current.getSheet();
 			s.rotatePage(s.numberOfPages(), 1);
 			this.current.refresh();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (DocumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		} catch (Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, "Fehler beim rotieren.", "Fehler", JOptionPane.OK_OPTION);
+		} 
 	}
 	
 	private void addClicked(){
@@ -152,12 +148,9 @@ public class SortingDialog extends JDialog implements ActionListener{
 					this.bAddPage.setEnabled(false);
 				}
 			}
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
+		} catch (Exception e1) {
 			e1.printStackTrace();
-		} catch (DocumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			JOptionPane.showMessageDialog(this, "Fehler beim hinzufügen der Seite");
 		}
 	}
 	
@@ -181,12 +174,9 @@ public class SortingDialog extends JDialog implements ActionListener{
 				this.previewpanel.showSheet(null);
 				this.bAddPage.setEnabled(false);
 			}
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
+		} catch (Exception e1) {
 			e1.printStackTrace();
-		} catch (DocumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			JOptionPane.showMessageDialog(this, "Fehler beim speichern der Seite");
 		}
 	}
 	
