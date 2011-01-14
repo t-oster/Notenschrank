@@ -61,7 +61,7 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener{
 		this.setContentPane(b);
 		//this.setMinimumSize(new Dimension(200,90));
 		this.pack();
-		this.setLocationByPlatform(true);
+		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 	}
 

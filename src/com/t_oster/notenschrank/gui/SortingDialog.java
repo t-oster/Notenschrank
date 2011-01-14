@@ -97,7 +97,7 @@ public class SortingDialog extends JDialog implements ActionListener{
 		this.mainPanel.add(box);
 		this.setContentPane(mainPanel);
 		this.pack();
-		this.setLocationByPlatform(true);
+		this.setLocationRelativeTo(null);
 	}
 	
 	public void showDialog(){
@@ -131,7 +131,7 @@ public class SortingDialog extends JDialog implements ActionListener{
 	private void rotateClicked(){
 		try {
 			Sheet s = this.current.getSheet();
-			s.rotatePage(s.numberOfPages(), 1);
+			s.rotateAllPages(1);
 			this.current.refresh();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -170,15 +170,22 @@ public class SortingDialog extends JDialog implements ActionListener{
 			return;
 		}
 		try {
-			JPanel existingPreview = new JPanel();
-			existingPreview.setSize(300,500);
-			existingPreview.setLayout(new BoxLayout(existingPreview, BoxLayout.Y_AXIS));
-			//TODO: Fix Layout
-			//existingPreview.add(new PreviewPanel(existingPreview, Archive.getInstance().getSheet(song,v)));
-			existingPreview.add(new JLabel( "Datei ist bereits im Archiv.\nÜberschreiben?"));
-			existingPreview.validate();
-			if (Archive.getInstance().contains(song,v) && JOptionPane.showConfirmDialog(this,existingPreview,this.getTitle(), JOptionPane.YES_NO_OPTION)==JOptionPane.NO_OPTION){
-				return;
+			if (Archive.getInstance().contains(song,v)){
+				JPanel existingPreview = new JPanel();
+				existingPreview.setLayout(new BoxLayout(existingPreview, BoxLayout.Y_AXIS));
+				existingPreview.setPreferredSize(new Dimension(400,400));
+				existingPreview.setMinimumSize(new Dimension(400,400));
+				existingPreview.setMaximumSize(new Dimension(400,400));
+				PreviewPanel pp = new PreviewPanel(existingPreview);
+				pp.setPreferredSize(new Dimension(380,380));
+				pp.setSize(380,380);
+				pp.showSheet(Archive.getInstance().getSheet(song,v));
+				existingPreview.add(pp);
+				existingPreview.add(new JLabel( "Datei ist bereits im Archiv."));
+				existingPreview.add(new JLabel ( "Überschreiben?"));
+				if (JOptionPane.showConfirmDialog(this, existingPreview, this.getTitle(), JOptionPane.YES_NO_OPTION)==JOptionPane.NO_OPTION){
+					return;
+				}
 			}
 			Archive.getInstance().addToArchive(s, song, v);
 			s.delete();
