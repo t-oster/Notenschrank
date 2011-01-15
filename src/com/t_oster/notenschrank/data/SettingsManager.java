@@ -1,50 +1,120 @@
 package com.t_oster.notenschrank.data;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-public class SettingsManager implements Serializable{
+public class SettingsManager implements Serializable {
 	/**
 	 * 
 	 */
+	private static String SETTINGS_FILE = "settings.dat";
 	private static final long serialVersionUID = 2627505348844681752L;
-	//Static part for Singelton design pattern
+	// Static part for Singelton design pattern
 	private static SettingsManager instance;
-	public static SettingsManager getInstance(){
-		if (instance == null){
-			instance = new SettingsManager();
+
+	public static SettingsManager getInstance() {
+		if (instance == null) {
+			try{
+				loadFromFile(new File(SETTINGS_FILE));
+			}
+			catch(Exception e){
+				System.err.println("Couldn't load settings. Applying default settings");
+				instance = new SettingsManager();
+			}
 		}
 		return instance;
 	}
-	
-	//Attributes for Program Settings
-	private String programVersion = "0.1";
-	String archivePath = "Archive";
-	String stackPath = "Stack";
-	
-	private SettingsManager(){
-		
+
+	public static SettingsManager loadFromFile(File f) throws IOException, ClassNotFoundException {
+		FileInputStream fin = new FileInputStream(f);
+		ObjectInputStream ois = new ObjectInputStream(fin);
+		instance = (SettingsManager) ois.readObject();
+		ois.close();
+		return getInstance();
 	}
-	
-	public File getTempFile(){
+
+	// Attributes for Program Settings
+	private String programVersion = "0.1";
+	private String archivePath = "Archive";
+	private String stackPath = "Stack";
+	//We want to see the last page in preview instead of the first
+	private boolean showLastPage = false;
+	public boolean isShowLastPage() {
+		return showLastPage;
+	}
+
+	public void setShowLastPage(boolean showLastPage) {
+		this.showLastPage = showLastPage;
+	}
+
+	private Map<String, Integer> predefinedNumbers = new LinkedHashMap<String, Integer>();
+	//TODO: Add Settings for predefined Songs because in Big Archive you wouldn't want to print all.
+
+	private SettingsManager() {
+
+	}
+
+	public File getTempFile() {
 		File result;
-		int i=0;
-		do{
-			result = new File("///tmp//tmp"+i+".dat");
-		}while(result.exists());
+		int i = 0;
+		do {
+			result = new File("///tmp//tmp" + (i++) + ".dat");
+		} while (result.exists());
 		return result;
 	}
-	
-	public String getProgramVersion(){
+
+	public String getProgramVersion() {
 		return programVersion;
 	}
-	
-	public File getArchivePath(){
+
+	public File getArchivePath() {
 		return new File(archivePath);
 	}
 	
-	public File getStackPath(){
+	public void setArchivePath(String path){
+		this.archivePath = path;
+	}
+
+	public File getStackPath() {
 		return new File(stackPath);
 	}
 	
+	public void setStackPath(String path){
+		this.stackPath = path;
+	}
+
+	/**
+	 * Also using String instead of Voice because of HashMap
+	 * @param predefinedNumbers
+	 */
+	public void setPredefinedNumbers(Map<String, Integer> predefinedNumbers) {
+		this.predefinedNumbers = predefinedNumbers;
+	}
+	
+	/**
+	 * Saves the settings in the standard settings file
+	 * @throws IOException 
+	 */
+	public void save() throws IOException{
+		this.saveToFile(new File(SETTINGS_FILE));
+	}
+
+	public Map<String, Integer> getPredefinedNumbers() {
+		return predefinedNumbers;
+	}
+
+	public void saveToFile(File f) throws IOException {
+		FileOutputStream fout = new FileOutputStream(f);
+		ObjectOutputStream oos = new ObjectOutputStream(fout);
+		oos.writeObject(this);
+		oos.close();
+	}
+
 }

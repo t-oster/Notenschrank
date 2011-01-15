@@ -78,7 +78,7 @@ public class SheetTest {
 		File tmp = new File("///tmp//c.pdf");
 		s.writeToFile(tmp);
 		s = new Sheet(tmp);
-		s.rotatePage(1, 2);
+		s.rotatePage(new int[]{1}, 2);
 		//show the image in a frame
         JFrame frame = new JFrame("PDF Test");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -92,7 +92,7 @@ public class SheetTest {
         frame.pack();
         frame.setVisible(true);
         JOptionPane.showMessageDialog(null, "you should see the PDF stuff", "bla", JOptionPane.OK_OPTION);
-        s.rotatePage(1, 1);
+        s.rotatePage(new int[]{1}, 1);
         img = s.getPreview(new Dimension(0,0), new Dimension(100,30), new Dimension(300,200));
         assertEquals(img.getWidth(null),300);
         assertEquals(img.getHeight(null),200);
@@ -102,5 +102,21 @@ public class SheetTest {
 		frame.add(lab);
         frame.pack();
         JOptionPane.showMessageDialog(null, "you should see the PDF stuff", "bla", JOptionPane.OK_OPTION);
+	}
+
+	@Test
+	public void readerTest() throws IOException{
+		File a = new File("data//a.pdf");
+		Sheet sa = new Sheet(a);
+		sa.openInReader();
+	}
+	
+	@Test
+	public void printTest() throws IOException{
+		File a = new File("data//a.pdf");
+		Sheet sa = new Sheet(a);
+		if (JOptionPane.showConfirmDialog(null,"Do you want to print the sheet?","Sure?", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
+			sa.print();
+		}
 	}
 }

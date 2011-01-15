@@ -35,6 +35,9 @@ public class Archive {
 	}
 	
  	public Song[] getAvailableSongs(){
+ 		if (SettingsManager.getInstance().getArchivePath()==null || !SettingsManager.getInstance().getArchivePath().exists()){
+ 			return new Song[0];
+ 		}
 		LinkedList<Song> result = new LinkedList<Song>();
 		for(File f:SettingsManager.getInstance().getArchivePath().listFiles()){
 			if (f.isDirectory()){
@@ -45,6 +48,16 @@ public class Archive {
 		
 	}
 	
+ 	public Song[] getAvailableSongs(Voice selectedVoice) {
+ 		LinkedList<Song> result = new LinkedList<Song>();
+		for (Song s:this.getAvailableSongs()){
+			if (this.contains(s, selectedVoice)){
+				result.add(s);
+			}
+		}
+		return result.toArray(new Song[0]);
+	}
+ 	
 	public Voice[] getAvailableVoices(){
 		//Using HashMap of String and not Voice because it doesn't work properly
 		Set<String> result = new HashSet<String>();
@@ -61,7 +74,15 @@ public class Archive {
 		return rresult;
 	}
 	
+	/**
+	 * If s is null all possible Voices are returned.
+	 * @param s
+	 * @return
+	 */
 	public Voice[] getAvailableVoices(Song s){
+		if (s==null){
+			return this.getAvailableVoices();
+		}
 		LinkedList<Voice> result = new LinkedList<Voice>();
 		for(File f:calculatePath(s).listFiles()){
 			if (f.isFile()){
@@ -94,9 +115,7 @@ public class Archive {
 	}
 	
 	public Sheet getSheet(Song s, Voice v) throws IOException{
-		File result = new File(
-				SettingsManager.getInstance().getArchivePath(),
-				s.toString()+File.pathSeparator+v.toString()+"."+Sheet.FILEEXTENSION);
+		File result = this.calculatePath(s, v);
 		if (result.exists()){
 			return new Sheet(result);
 		}
@@ -127,4 +146,9 @@ public class Archive {
 		File target = calculatePath(song,v);
 		s.writeToFile(target);
 	}
+
+	
+	
+
+	
 }

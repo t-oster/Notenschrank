@@ -23,7 +23,7 @@ public class ArchiveTester {
 	
 	@Before
 	public void setUp() throws IOException{
-		SettingsManager.getInstance().archivePath = "///tmp//archivtest";
+		SettingsManager.getInstance().setArchivePath("///tmp//archivtest");
 		File arc = SettingsManager.getInstance().getArchivePath();
 		arc.mkdirs();
 		for (int i=0;i<songs.length;i++){
