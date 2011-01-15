@@ -61,15 +61,19 @@ public class SettingsManager implements Serializable {
 
 	}
 
-	public File getTempFile() {
+	public File getTempFile(String ending) {
 		File result;
 		int i = 0;
 		do {
-			result = new File("///tmp//tmp" + (i++) + ".dat");
+			result = new File("///tmp//tmp" + (i++) + "."+ending);
 		} while (result.exists());
 		return result;
 	}
 
+	public File getTempFile() {
+		return getTempFile("dat");
+	}
+	
 	public String getProgramVersion() {
 		return programVersion;
 	}
@@ -116,5 +120,7 @@ public class SettingsManager implements Serializable {
 		oos.writeObject(this);
 		oos.close();
 	}
+
+	
 
 }

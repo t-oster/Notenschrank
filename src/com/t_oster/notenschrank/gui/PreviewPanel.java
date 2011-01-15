@@ -3,6 +3,8 @@ package com.t_oster.notenschrank.gui;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
@@ -11,6 +13,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.IOException;
 import java.security.InvalidParameterException;
+import java.util.LinkedList;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -26,12 +29,27 @@ public class PreviewPanel extends JPanel implements Runnable, ComponentListener,
 	/**
 	 * 
 	 */
+	public static final int IMAGE_RELOADED = 0;
+	
 	private static final long serialVersionUID = 595838121389049252L;
 	private JLabel widget;
 	private Image image;
 	private Sheet sheet;
 	private Component parent;
 	private boolean refreshing=false;
+	private LinkedList<ActionListener> aListeners = new LinkedList<ActionListener>();
+	public void addActionListener(ActionListener a){
+		aListeners.add(a);
+	}
+	public void removeActionListener(ActionListener a){
+		aListeners.remove(a);
+	}
+	
+	public Image getShownImage(){
+		synchronized(this){
+			return image;
+		}
+	}
 	
 	public PreviewPanel(Component parent){
 		this.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
@@ -145,11 +163,15 @@ public class PreviewPanel extends JPanel implements Runnable, ComponentListener,
 				if (rPos.height+rSize.height>100){
 					rPos.height=100-rSize.height;
 				}
-				this.image = sheet.getPreview(rPos, rSize, new Dimension(width,height));
+				synchronized (this){
+					this.image = sheet.getPreview(rPos, rSize, new Dimension(width,height));
+				}
 				this.remove(tmp);
 				widget.setText("");
 				widget.setIcon(new ImageIcon(this.image));
-				
+				for(ActionListener a:aListeners){
+					a.actionPerformed(new ActionEvent(this, IMAGE_RELOADED, "image refreshed"));
+				}
 			} catch (IOException e) {
 				this.widget.setIcon(null);
 				this.widget.setText("Fehler beim Anzeigen...\n"+e.getMessage());
