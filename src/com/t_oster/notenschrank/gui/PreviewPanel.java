@@ -6,8 +6,6 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
@@ -17,7 +15,6 @@ import java.security.InvalidParameterException;
 import java.util.LinkedList;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -54,6 +51,7 @@ public class PreviewPanel extends JPanel implements Runnable, MouseListener, Mou
 	public PreviewPanel(Component parent){
 		this.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 		this.setPreferredSize(new Dimension(300,200));
+		this.setMinimumSize(new Dimension(100,50));
 		widget = new JLabel("keine Datei zum einsortieren");
 		this.add(widget);
 		this.validate();
@@ -61,6 +59,9 @@ public class PreviewPanel extends JPanel implements Runnable, MouseListener, Mou
 		this.addMouseListener(this);
 		this.addMouseWheelListener(this);
 	}
+	
+	//TODO: Fix scrolling
+
 	
 	public PreviewPanel(Component parent, Sheet sheet) {
 		this(parent);

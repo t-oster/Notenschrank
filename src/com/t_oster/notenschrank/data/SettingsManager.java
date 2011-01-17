@@ -75,6 +75,9 @@ public class SettingsManager implements Serializable {
 	}
 
 	public SortingDialog.Layout getPreferredSortingDialogLayout(){
+		if (sflayout==null){
+			sflayout=SortingDialog.Layout.VERTICAL;
+		}
 		return sflayout;
 	}
 	
