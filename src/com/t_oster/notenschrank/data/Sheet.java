@@ -162,43 +162,51 @@ public class Sheet {
 	 * UnsupportedOperationException if not implemented for specific OS
 	 */
 	public void openInReader() throws IOException {
-		if (System.getProperty("os.name").toLowerCase().indexOf("windows") > -1) {
-			if (USE_LOWAGIE_PDFLIB) {
-				com.lowagie.tools.Executable.openDocument(pdf_file);
-			} else {
-				throw new RuntimeException(
-						"Diese Funktion ist für ihr OS momentan nicht verfügbar.\n"
-								+ "Bitte drucken Sie die Datei '"
-								+ pdf_file.getAbsolutePath() + "' manuell.");
+		switch (Util.getOS()) {
+			case WINDOWS: {
+				if (USE_LOWAGIE_PDFLIB) {
+					com.lowagie.tools.Executable.openDocument(pdf_file);
+				} else {
+					throw new RuntimeException(
+							"Diese Funktion ist für ihr OS momentan nicht verfügbar.\n"
+									+ "Bitte drucken Sie die Datei '"
+									+ pdf_file.getAbsolutePath() + "' manuell.");
+				}
+				break;
 			}
-		} else if (System.getProperty("os.name").toLowerCase().indexOf("linux") > -1) {
-			if (USE_LOWAGIE_PDFLIB) {
-				Process p = com.lowagie.tools.Executable.openDocument(pdf_file);
-				if (p==null){
-					System.err.println("Lowagie doesn't work... fallback.");
-					p = Runtime.getRuntime().exec(
+			case LINUX: {
+				if (USE_LOWAGIE_PDFLIB) {
+					Process p = com.lowagie.tools.Executable.openDocument(pdf_file);
+					if (p == null) {
+						System.err.println("Lowagie doesn't work... fallback.");
+						p = Runtime.getRuntime().exec(
+								new String[] { "acroread", "-openInNewInstance",
+										"-tempFileTitle",
+										"Notenschrank-Druckansicht",
+										pdf_file.getAbsolutePath() });
+						if (p == null) {
+							throw new RuntimeException(
+									"Diese Funktion ist für ihr OS momentan nicht verfügbar.\n"
+											+ "Bitte drucken Sie die Datei '"
+											+ pdf_file.getAbsolutePath()
+											+ "' manuell.");
+						}
+	
+					}
+				} else {
+					Runtime.getRuntime().exec(
 							new String[] { "acroread", "-openInNewInstance",
 									"-tempFileTitle", "Notenschrank-Druckansicht",
 									pdf_file.getAbsolutePath() });
-					if (p==null){
-						throw new RuntimeException(
-								"Diese Funktion ist für ihr OS momentan nicht verfügbar.\n"
-										+ "Bitte drucken Sie die Datei '"
-										+ pdf_file.getAbsolutePath() + "' manuell.");
-					}
-					
 				}
-			} else {
-				Runtime.getRuntime().exec(
-						new String[] { "acroread", "-openInNewInstance",
-								"-tempFileTitle", "Notenschrank-Druckansicht",
-								pdf_file.getAbsolutePath() });
+				break;
 			}
-		} else if (System.getProperty("os.name").toLowerCase().indexOf("mac") > -1) {
-			throw new UnsupportedOperationException(
-					"Unter ihrem Betriebssystem können die Dokumente nicht direkt geöffnet werden."
-							+ "\nBitte öffnen Sie manuell die Datei: '"
-							+ pdf_file.getAbsolutePath() + "'");
+			default: {
+				throw new UnsupportedOperationException(
+						"Unter ihrem Betriebssystem können die Dokumente nicht direkt geöffnet werden."
+								+ "\nBitte öffnen Sie manuell die Datei: '"
+								+ pdf_file.getAbsolutePath() + "'");
+			}
 		}
 
 	}
@@ -213,24 +221,28 @@ public class Sheet {
 	 * @throws IOException
 	 */
 	public void print() throws IOException {
-		if (System.getProperty("os.name").toLowerCase().indexOf("windows") > -1) {
-			if (USE_LOWAGIE_PDFLIB) {
-				com.lowagie.tools.Executable.printDocumentSilent(pdf_file);
-			} else {
-				throw new RuntimeException(
-						"Diese Funktion ist für ihr OS momentan nicht verfügbar.\n"
-								+ "Bitte drucken Sie die Datei '"
-								+ pdf_file.getAbsolutePath() + "' manuell.");
+		switch (Util.getOS()){
+			case WINDOWS : {
+				if (USE_LOWAGIE_PDFLIB) {
+					com.lowagie.tools.Executable.printDocumentSilent(pdf_file);
+				} else {
+					throw new RuntimeException(
+							"Diese Funktion ist für ihr OS momentan nicht verfügbar.\n"
+									+ "Bitte drucken Sie die Datei '"
+									+ pdf_file.getAbsolutePath() + "' manuell.");
+				}
+				break;
+			} case LINUX: {
+				// TODO: doesn't work
+				Runtime.getRuntime().exec(
+						new String[] { "lp", pdf_file.getAbsolutePath() });
+				break;
+			} default: {
+				throw new UnsupportedOperationException(
+						"Unter ihrem Betriebssystem können die Dokumente nicht direkt gedruckt werden."
+								+ "\nBitte drucken Sie manuell die Datei: '"
+								+ pdf_file.getAbsolutePath() + "'");
 			}
-		} else if (System.getProperty("os.name").toLowerCase().indexOf("linux") > -1) {
-			// TODO: doesn't work
-			Runtime.getRuntime().exec(
-					new String[] { "lp", pdf_file.getAbsolutePath() });
-		} else if (System.getProperty("os.name").toLowerCase().indexOf("mac") > -1) {
-			throw new UnsupportedOperationException(
-					"Unter ihrem Betriebssystem können die Dokumente nicht direkt gedruckt werden."
-							+ "\nBitte drucken Sie manuell die Datei: '"
-							+ pdf_file.getAbsolutePath() + "'");
 		}
 
 	}

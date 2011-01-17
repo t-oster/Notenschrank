@@ -65,7 +65,7 @@ public class SettingsManager implements Serializable {
 		File result;
 		int i = 0;
 		do {
-			result = new File("///tmp//tmp" + (i++) + "."+ending);
+			result = new File(System.getProperty("java.io.tmpdir")+"//tmp" + (i++) + "."+ending);
 		} while (result.exists());
 		return result;
 	}

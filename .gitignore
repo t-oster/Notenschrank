@@ -1,6 +1,6 @@
 settings.dat
 Archive
 Stack
-data
+*.pdf
 bin
 bin/*
