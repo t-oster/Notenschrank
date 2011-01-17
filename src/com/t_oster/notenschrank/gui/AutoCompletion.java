@@ -24,6 +24,7 @@ public class AutoCompletion extends PlainDocument {
 	boolean hidePopupOnFocusLoss;
 	boolean hitBackspace = false;
 	boolean hitBackspaceOnSelection;
+	boolean editingExistingObject = true;
 
 	KeyListener editorKeyListener;
 	FocusListener editorFocusListener;
@@ -47,7 +48,7 @@ public class AutoCompletion extends PlainDocument {
 		});
 		editorKeyListener = new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
-				if (comboBox.isDisplayable())
+				if (editingExistingObject && comboBox.isDisplayable())
 					comboBox.setPopupVisible(true);
 				hitBackspace = false;
 				switch (e.getKeyCode()) {
@@ -111,7 +112,7 @@ public class AutoCompletion extends PlainDocument {
 		}
 	}
 
-	private boolean editingExistingObject = true;
+	
 	
 	public void remove(int offs, int len) throws BadLocationException {
 		// return immediately when selecting an item
@@ -146,12 +147,14 @@ public class AutoCompletion extends PlainDocument {
 		Object item = lookupItem(getText(0, getLength()));
 		if (item != null) {
 			editingExistingObject=true;
+			comboBox.setPopupVisible(true);
 			setSelectedItem(item);
 			setText(item.toString());
 			// select the completed part
 			highlightCompletedText(offs + str.length());
 		} else {
 			editingExistingObject=false;
+			comboBox.setPopupVisible(false);
 			//setText(item.toString());
 			// keep old item selected if there is no match
 			//item = comboBox.getSelectedItem();

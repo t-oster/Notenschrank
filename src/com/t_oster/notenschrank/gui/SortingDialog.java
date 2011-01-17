@@ -26,6 +26,11 @@ import com.t_oster.notenschrank.data.Voice;
 
 public class SortingDialog extends JDialog implements ActionListener{
 	
+	public enum Layout {
+		VERTICAL,
+		HORIZONTAL
+	}
+
 	/**
 	 * 
 	 */
@@ -42,7 +47,7 @@ public class SortingDialog extends JDialog implements ActionListener{
 	private JButton bGuessVoice;
 	private List<Sheet> stackSheets;
 
-	public SortingDialog(JFrame parent){
+	public SortingDialog(JFrame parent, Layout layout){
 		super(parent,"Notenschrank "+SettingsManager.getInstance().getProgramVersion());
 		this.setPreferredSize(new Dimension(800,600));
 		this.previewpanel = new PreviewPanel(this);
@@ -79,19 +84,27 @@ public class SortingDialog extends JDialog implements ActionListener{
 		
 		this.mainPanel = new JPanel();
 		this.mainPanel.setLayout(new BoxLayout(this.mainPanel, BoxLayout.Y_AXIS));
-		Box b = Box.createHorizontalBox();
-		b.add(Box.createHorizontalGlue());
-		b.add(new JLabel("nächstes Blatt"));
-		b.add(Box.createHorizontalGlue());
-		b.add(new JLabel("aktuelles Blatt"));
-		b.add(Box.createHorizontalGlue());
-		this.mainPanel.add(b);
-		JPanel previewContainer = new JPanel();
-		previewContainer.setLayout(new GridLayout(1,2));
-		previewContainer.add(this.previewpanel);
-		previewContainer.add(this.current);
-		this.mainPanel.add(previewContainer);
-		b=Box.createHorizontalBox();
+		if (layout==Layout.HORIZONTAL){
+			Box b = Box.createHorizontalBox();
+			b.add(Box.createHorizontalGlue());
+			b.add(new JLabel("nächstes Blatt"));
+			b.add(Box.createHorizontalGlue());
+			b.add(new JLabel("aktuelles Blatt"));
+			b.add(Box.createHorizontalGlue());
+			this.mainPanel.add(b);
+			JPanel previewContainer = new JPanel();
+			previewContainer.setLayout(new GridLayout(1,2));
+			previewContainer.add(this.previewpanel);
+			previewContainer.add(this.current);
+			this.mainPanel.add(previewContainer);
+		}
+		else if (layout == Layout.VERTICAL){
+			mainPanel.add(new JLabel("aktuelles Blatt"));
+			mainPanel.add(current);
+			mainPanel.add(new JLabel("nächstes Blatt"));
+			mainPanel.add(this.previewpanel);
+		}
+		Box b=Box.createHorizontalBox();
 		b.add(Box.createHorizontalGlue());
 		b.add(new JLabel("Lied:      "));
 		b.add(cbSong);
@@ -236,7 +249,7 @@ public class SortingDialog extends JDialog implements ActionListener{
 					possible[i]=cbSong.getItemAt(i).toString();
 				}
 				OCRResult guess = OCR.findStringInImage(possible, s.getPreview(new Dimension(25,0), new Dimension(50,20), new Dimension(500,200)));
-				if (guess.matchquality > 50){
+				if (guess.matchquality > 70){
 					cbSong.setSelectedIndex(guess.index);
 				}
 				else{
@@ -263,10 +276,10 @@ public class SortingDialog extends JDialog implements ActionListener{
 				OCRResult guess2 = OCR.findStringInImage(possible, s.getPreview(new Dimension(75,0), new Dimension(25,20), new Dimension(250,200)));
 				OCRResult guess = guess1.matchquality>guess2.matchquality?guess1:guess2;
 				if (guess.matchquality > 50){
-					cbSong.setSelectedIndex(guess.index);
+					cbVoice.setSelectedIndex(guess.index);
 				}
 				else{
-					cbSong.setSelectedItem(guess.beautified);
+					cbVoice.setSelectedItem(guess.beautified);
 				}
 			} catch (IOException e1) {
 				e1.printStackTrace();

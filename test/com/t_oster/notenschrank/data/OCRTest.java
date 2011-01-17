@@ -28,6 +28,9 @@ public class OCRTest {
 		int i= OCR.match("He is a Pirate", "HE’S A PIRATE ",true);
 		System.out.println("I:"+i);
 		assertTrue(i>50);
+		i= OCR.match("The Time Warp", "HE’S A PIRATE ",true);
+		System.out.println("I:"+i);
+		assertTrue(i<50);
 	}
 	
 	@Test

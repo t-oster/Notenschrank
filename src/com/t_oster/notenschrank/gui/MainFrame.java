@@ -1,5 +1,8 @@
 package com.t_oster.notenschrank.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -52,14 +55,20 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener{
 		btSettings.addActionListener(this);
 		this.addWindowListener(this);
 		
+		//TODO: Add icons to Buttons
+		
 		//layout & look and Feel
 		JPanel b = new JPanel();
-		b.setLayout(new GridLayout(0,1));
+		b.setLayout(new GridLayout(0,1, 5,5));
 		b.add(btScan);
 		b.add(btPrint);
 		b.add(btSettings);
-		this.setContentPane(b);
+		JPanel mainFrame = new JPanel();
+		mainFrame.setLayout(new FlowLayout(FlowLayout.CENTER));
+		mainFrame.add(b, BorderLayout.CENTER);
+		this.setContentPane(mainFrame);
 		//this.setMinimumSize(new Dimension(200,90));
+		this.setPreferredSize(new Dimension(250,150));
 		this.pack();
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);

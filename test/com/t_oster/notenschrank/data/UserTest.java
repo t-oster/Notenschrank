@@ -48,7 +48,7 @@ public class UserTest {
 	
 	@Test
 	public void scanTest(){
-		new SortingDialog(null).showDialog();
+		new SortingDialog(null, SortingDialog.Layout.VERTICAL).showDialog();
 	}
 	
 	@Before

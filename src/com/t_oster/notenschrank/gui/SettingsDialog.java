@@ -5,10 +5,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -18,6 +21,7 @@ import javax.swing.JTextField;
 
 import com.t_oster.notenschrank.data.Archive;
 import com.t_oster.notenschrank.data.SettingsManager;
+import com.t_oster.notenschrank.data.Song;
 import com.t_oster.notenschrank.data.Voice;
 
 
@@ -33,6 +37,7 @@ public class SettingsDialog extends JPanel {
 	private JButton bBrowsSP = new JButton("browse");
 	//Use String instead of Voice, because HashMap has Problems
 	private Map<String,JTextField> numberFields;
+	private Map<String,JCheckBox> isDefaultFields;
 	private JPanel thiss;
 	
 	private SettingsDialog(){
@@ -43,7 +48,7 @@ public class SettingsDialog extends JPanel {
 		this.add(new JLabel("Gescannte Dateien:"));
 		this.add(tfStackPath);
 		this.add(bBrowsSP);
-		
+		//TODO: pack this onto scroll panes or new Dialogs
 		Map<String, Integer> map = SettingsManager.getInstance().getPredefinedNumbers();
 		Voice[] voices = Archive.getInstance().getAvailableVoices();
 		numberFields = new LinkedHashMap<String, JTextField>();
@@ -67,6 +72,29 @@ public class SettingsDialog extends JPanel {
 					this.add(tf);
 					numberFields.put(v.toString(),tf);
 				}
+			}
+		}
+		Set<String> defaultSongs = SettingsManager.getInstance().getDefaultSongs();
+		Song[] songs = Archive.getInstance().getAvailableSongs();
+		isDefaultFields = new LinkedHashMap<String,JCheckBox>();
+		if (defaultSongs != null){
+			for (String s:defaultSongs){
+				this.add(new JLabel("In aktueller Mappe enthalten"));
+				this.add(new JLabel(s));
+				JCheckBox b = new JCheckBox();
+				b.setSelected(true);
+				this.add(b);
+				isDefaultFields.put(s,b);
+			}
+		}
+		for (Song s:songs){
+			if (!isDefaultFields.containsKey(s.toString())){
+				this.add(new JLabel("In aktueller Mappe enthalten"));
+				this.add(new JLabel(s.toString()));
+				JCheckBox b = new JCheckBox();
+				b.setSelected(false);
+				this.add(b);
+				isDefaultFields.put(s.toString(),b);
 			}
 		}
 		
@@ -147,6 +175,14 @@ public class SettingsDialog extends JPanel {
 			
 		}
 		sm.setPredefinedNumbers(nm);
+		Set<String> defaultSongs = new LinkedHashSet<String>();
+		for (Entry<String, JCheckBox> e:isDefaultFields.entrySet()){
+			if (e.getValue().isSelected()){
+				defaultSongs.add(e.getKey());
+			}
+		}
+		sm.setDefaultSongs(defaultSongs);
+		
 		try {
 			sm.save();
 		} catch (IOException e1) {

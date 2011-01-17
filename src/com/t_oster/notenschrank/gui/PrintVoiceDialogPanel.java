@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Set;
 
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
@@ -14,6 +15,7 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import com.t_oster.notenschrank.data.Archive;
+import com.t_oster.notenschrank.data.SettingsManager;
 import com.t_oster.notenschrank.data.Sheet;
 import com.t_oster.notenschrank.data.Song;
 
@@ -35,12 +37,22 @@ public class PrintVoiceDialogPanel extends JPanel{
 		bVoice = new SelectVoiceBox(false);
 		availableSongs = Archive.getInstance().getAvailableSongs(bVoice.getSelectedVoice());
 		selectedNumbers = new boolean[availableSongs.length];
+		//do preselection
+		Set<String> defaultSongs = SettingsManager.getInstance().getDefaultSongs();
+		for (int i=0;i<selectedNumbers.length;i++){
+			selectedNumbers[i]=( defaultSongs.contains(availableSongs[i].toString()) );
+		}
 		bVoice.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				availableSongs = Archive.getInstance().getAvailableSongs(bVoice.getSelectedVoice());
 				selectedNumbers = new boolean[availableSongs.length];
+				//do preselection
+				Set<String> defaultSongs = SettingsManager.getInstance().getDefaultSongs();
+				for (int i=0;i<selectedNumbers.length;i++){
+					selectedNumbers[i]=( defaultSongs.contains(availableSongs[i].toString()) );
+				}
 				tSongsModel.fireTableDataChanged();
 			}
 			

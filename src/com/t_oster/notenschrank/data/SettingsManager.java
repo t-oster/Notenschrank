@@ -8,7 +8,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
+
+import com.t_oster.notenschrank.gui.SortingDialog;
 
 public class SettingsManager implements Serializable {
 	/**
@@ -55,12 +59,25 @@ public class SettingsManager implements Serializable {
 	}
 
 	private Map<String, Integer> predefinedNumbers = new LinkedHashMap<String, Integer>();
-	//TODO: Add Settings for predefined Songs because in Big Archive you wouldn't want to print all.
-
+	private Set<String> defaultSongs = new LinkedHashSet<String>();
+	
+	public Set<String> getDefaultSongs(){
+		return defaultSongs;
+	}
+	
+	public void setDefaultSongs(Set<String> def){
+		this.defaultSongs=def;
+	}
+	
+	public SortingDialog.Layout sflayout = SortingDialog.Layout.VERTICAL;
 	private SettingsManager() {
 
 	}
 
+	public SortingDialog.Layout getPreferredSortingDialogLayout(){
+		return sflayout;
+	}
+	
 	public File getTempFile(String ending) {
 		File result;
 		int i = 0;
