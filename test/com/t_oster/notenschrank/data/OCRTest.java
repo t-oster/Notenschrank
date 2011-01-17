@@ -11,14 +11,25 @@ import java.io.IOException;
 import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
-import org.junit.After;
 import org.junit.Test;
 
 import com.t_oster.notenschrank.gui.PreviewPanel;
 
 public class OCRTest {
+	
+	
+	
+	@Test
+	public void testMatch(){
+		assertEquals(100,OCR.match("helloworld", "hellhelloworld"));
+		assertEquals(100,OCR.match("world hello","##'234hellohelloworld341234",true));
+		assertEquals(0,OCR.match("helloworld",""));
+		assertEquals(100,OCR.match("a","#';4234nsdfsfalhsdfsf"));
+		int i= OCR.match("He is a Pirate", "HE’S A PIRATE ",true);
+		System.out.println("I:"+i);
+		assertTrue(i>50);
+	}
+	
 	@Test
 	public void testOCRwithGUI() throws IOException{
 		Box testPanel = Box.createVerticalBox();

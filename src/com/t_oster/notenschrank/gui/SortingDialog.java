@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 
 import com.t_oster.notenschrank.data.Archive;
 import com.t_oster.notenschrank.data.OCR;
+import com.t_oster.notenschrank.data.OCR.OCRResult;
 import com.t_oster.notenschrank.data.SettingsManager;
 import com.t_oster.notenschrank.data.Sheet;
 import com.t_oster.notenschrank.data.Song;
@@ -226,36 +227,53 @@ public class SortingDialog extends JDialog implements ActionListener{
 	}
 	
 	private void guessSongClicked(){
+		bGuessSong.setEnabled(false);
 		Sheet s = current.getSheet();
 		if (s!=null){
 			try {
-				String guess = OCR.getStringsInImage(s.getPreview(new Dimension(25,0), new Dimension(50,20), new Dimension(500,200)));
-				if (guess!=""){
-					cbSong.setSelectedItem(guess);
+				String[] possible = new String[cbSong.getItemCount()];
+				for (int i=0;i<possible.length;i++){
+					possible[i]=cbSong.getItemAt(i).toString();
+				}
+				OCRResult guess = OCR.findStringInImage(possible, s.getPreview(new Dimension(25,0), new Dimension(50,20), new Dimension(500,200)));
+				if (guess.matchquality > 50){
+					cbSong.setSelectedIndex(guess.index);
+				}
+				else{
+					cbSong.setSelectedItem(guess.beautified);
 				}
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			
 		}
+		bGuessSong.setEnabled(true);
 	}
 	
 	private void guessVoiceClicked(){
+		bGuessVoice.setEnabled(false);
 		Sheet s = current.getSheet();
 		if (s!=null){
 			try {
-				String guess = OCR.getStringsInImage(s.getPreview(new Dimension(0,0), new Dimension(25,20), new Dimension(250,200)));
-				System.out.println("Guess: "+guess);
-				if (guess!=""){
-					cbVoice.setSelectedItem(guess);
+				String[] possible = new String[cbVoice.getItemCount()];
+				for (int i=0;i<possible.length;i++){
+					possible[i]=cbVoice.getItemAt(i).toString();
+				}
+				OCRResult guess1 = OCR.findStringInImage(possible, s.getPreview(new Dimension(0,0), new Dimension(25,20), new Dimension(250,200)));
+				OCRResult guess2 = OCR.findStringInImage(possible, s.getPreview(new Dimension(75,0), new Dimension(25,20), new Dimension(250,200)));
+				OCRResult guess = guess1.matchquality>guess2.matchquality?guess1:guess2;
+				if (guess.matchquality > 50){
+					cbSong.setSelectedIndex(guess.index);
+				}
+				else{
+					cbSong.setSelectedItem(guess.beautified);
 				}
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			
 		}
+		bGuessVoice.setEnabled(true);
 	}
 	
 	@Override
