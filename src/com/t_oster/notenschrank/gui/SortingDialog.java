@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.Box;
@@ -16,6 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.t_oster.notenschrank.data.Archive;
+import com.t_oster.notenschrank.data.OCR;
 import com.t_oster.notenschrank.data.SettingsManager;
 import com.t_oster.notenschrank.data.Sheet;
 import com.t_oster.notenschrank.data.Song;
@@ -35,6 +37,8 @@ public class SortingDialog extends JDialog implements ActionListener{
 	private JButton bOk;
 	private JButton bAddPage;
 	private JButton bRotatePage;
+	private JButton bGuessSong;
+	private JButton bGuessVoice;
 	private List<Sheet> stackSheets;
 
 	public SortingDialog(JFrame parent){
@@ -46,6 +50,29 @@ public class SortingDialog extends JDialog implements ActionListener{
 		this.cbSong.setMaximumSize(new Dimension(500,35));
 		this.cbVoice = new SelectVoiceBox();
 		this.cbVoice.setMaximumSize(new Dimension(500,35));
+		
+		//Experimental
+		this.bGuessSong = new JButton("raten");
+		this.bGuessSong.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Sheet s = current.getSheet();
+				if (s!=null){
+					try {
+						String guess = OCR.getStringsInImage(s.getPreview(new Dimension(25,0), new Dimension(50,20), new Dimension(500,200)));
+						if (guess!=""){
+							cbSong.setSelectedItem(guess);
+						}
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
+				}
+			}
+			
+		});
 		
 		this.bOk = new JButton("Speichern");
 		this.bOk.addActionListener(this);
@@ -82,6 +109,7 @@ public class SortingDialog extends JDialog implements ActionListener{
 		b.add(Box.createHorizontalGlue());
 		b.add(new JLabel("Lied:      "));
 		b.add(cbSong);
+		b.add(bGuessSong);
 		b.add(Box.createHorizontalGlue());
 		this.mainPanel.add(b);
 		b=Box.createHorizontalBox();

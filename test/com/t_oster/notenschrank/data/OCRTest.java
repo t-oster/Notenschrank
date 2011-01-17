@@ -24,7 +24,10 @@ public class OCRTest {
 		Box testPanel = Box.createVerticalBox();
 		testPanel.setPreferredSize(new Dimension(300,400));
 		final PreviewPanel pw = new PreviewPanel(testPanel);
-		pw.showSheet(Archive.getInstance().getSheets(Archive.getInstance().getAvailableSongs()[1])[0]);
+		Sheet s = Archive.getInstance().getSheets(Archive.getInstance().getAvailableSongs()[0])[0];
+		System.out.println("Guessed name: "+OCR.getStringsInImage(s.getPreview(new Dimension(25,0), new Dimension(50,20), new Dimension(500,200))));
+		
+		pw.showSheet(s);
 		final JLabel found = new JLabel("making OCR");
 		testPanel.add(pw);
 		testPanel.add(found);
@@ -44,5 +47,6 @@ public class OCRTest {
 			
 		});
 		JOptionPane.showConfirmDialog(null, testPanel);
-	}
+		
+		}
 }
