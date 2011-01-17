@@ -50,9 +50,26 @@ public class OCR {
 		return result;
 	}
 
+	private static Boolean isAvailable = null;
 	public static boolean isAvailable(){
-		//TODO
-		return true;
+		if (isAvailable == null){
+			try {
+				Process p = Runtime.getRuntime().exec(new String[]{"convert", "--version"});
+				if (p==null){
+					throw new IOException("bla");
+				}
+				p = Runtime.getRuntime().exec(new String[]{"tesseract"});
+				if (p==null){
+					throw new IOException("bla");
+				}
+				isAvailable = true;
+			} catch (IOException e) {
+				isAvailable = false;
+				System.out.println("OCR is not available. OCR disabled.");
+				return isAvailable;
+			}
+		}
+		return isAvailable;
 	}
 	
 	private static RenderedImage toBufferedImage(Image image) {
@@ -80,7 +97,7 @@ public class OCR {
 				System.err.println("Error writing png");
 				return null;
 			}
-			Process p = Runtime.getRuntime().exec(new String[]{"/usr/bin/convert",png.getAbsolutePath(),"-depth", "4",tif.getAbsolutePath()});
+			Process p = Runtime.getRuntime().exec(new String[]{"convert",png.getAbsolutePath(),"-depth", "4",tif.getAbsolutePath()});
 			InputStream is = p.getErrorStream();
 			int i;
 			do{
