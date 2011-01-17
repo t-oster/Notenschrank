@@ -2,6 +2,7 @@ package com.t_oster.notenschrank.gui;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,7 +25,7 @@ import javax.swing.border.BevelBorder;
 
 import com.t_oster.notenschrank.data.Sheet;
 
-public class PreviewPanel extends JPanel implements Runnable, ComponentListener, MouseListener, MouseWheelListener{
+public class PreviewPanel extends JPanel implements Runnable, MouseListener, MouseWheelListener{
 	
 	/**
 	 * 
@@ -35,7 +36,6 @@ public class PreviewPanel extends JPanel implements Runnable, ComponentListener,
 	private JLabel widget;
 	private Image image;
 	private Sheet sheet;
-	private Component parent;
 	private boolean refreshing=false;
 	private LinkedList<ActionListener> aListeners = new LinkedList<ActionListener>();
 	public void addActionListener(ActionListener a){
@@ -53,16 +53,13 @@ public class PreviewPanel extends JPanel implements Runnable, ComponentListener,
 	
 	public PreviewPanel(Component parent){
 		this.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+		this.setPreferredSize(new Dimension(300,200));
 		widget = new JLabel("keine Datei zum einsortieren");
 		this.add(widget);
 		this.validate();
 		this.setVisible(true);
 		this.addMouseListener(this);
 		this.addMouseWheelListener(this);
-		this.parent=parent;
-		if (this.parent!=null){
-			this.parent.addComponentListener(this);
-;		}
 	}
 	
 	public PreviewPanel(Component parent, Sheet sheet) {
@@ -118,6 +115,7 @@ public class PreviewPanel extends JPanel implements Runnable, ComponentListener,
 		synchronized (this){
 			if (!this.refreshing){
 				this.refreshing=true;
+				this.image=null;
 				new Thread(this).start();
 			}
 			else{
@@ -133,24 +131,27 @@ public class PreviewPanel extends JPanel implements Runnable, ComponentListener,
 			mysheet=sheet;
 		}
 		if (mysheet==null){
-			this.widget.setIcon(null);
 			this.widget.setText("keine Datei zum einsortieren");
+			this.add(widget);
 		}
 		else{
 			try {
-				Dimension size = this.getSize();
-				if (size.width == 0 && size.height == 0){
-					size = new Dimension(300,60);
+				int width = this.getWidth();
+				int height =  this.getHeight();
+				if (width==0 || height==0){
+					synchronized(this){
+						refreshing=false;
+						return;
+					}
 				}
 				JProgressBar tmp = new JProgressBar();
 				tmp.setIndeterminate(true);
 				this.add(tmp);
 				this.widget.setText("...lade...");
-				this.widget.setIcon(null);
-				this.repaint();
+				this.add(widget);
+				this.validate();
 				//Bildgrösse
-				int width = (int) (size.getWidth()*0.8);
-				int height =  (int) (size.getHeight()*0.8);
+				
 				
 				//Passe relative höhe an um in Bildgrösse zu bleiben
 				this.rSize.height = this.rSize.width*height/width;
@@ -163,48 +164,50 @@ public class PreviewPanel extends JPanel implements Runnable, ComponentListener,
 				if (rPos.height+rSize.height>100){
 					rPos.height=100-rSize.height;
 				}
-				synchronized (this){
-					this.image = sheet.getPreview(rPos, rSize, new Dimension(width,height));
-				}
+				Image i = sheet.getPreview(rPos, rSize, new Dimension(width,height));
 				this.remove(tmp);
+				this.remove(widget);
 				widget.setText("");
-				widget.setIcon(new ImageIcon(this.image));
+				synchronized (this){
+					this.image = i;
+				}
+				this.validate();
 				for(ActionListener a:aListeners){
 					a.actionPerformed(new ActionEvent(this, IMAGE_RELOADED, "image refreshed"));
 				}
 			} catch (IOException e) {
-				this.widget.setIcon(null);
 				this.widget.setText("Fehler beim Anzeigen...\n"+e.getMessage());
+				this.validate();
 			} catch (InvalidParameterException e){
 				System.err.println(e.getMessage());
-				widget.setText("");
-				widget.setIcon(null);
+				widget.setText("Fehler");
+				this.validate();
 			}
 			
 		}
+		this.validate();
 		this.repaint();
 		synchronized(this){
 			this.refreshing=false;
 		}
 	}
 
-	@Override
-	public void componentHidden(ComponentEvent e) {
+	int oldwidth=0;
+	int oldheight=0;
+	public void paintComponent(Graphics g){
+		super.paintComponent(g);
+		if (this.getWidth()!= oldwidth || this.getHeight()!=oldheight){
+			oldwidth=this.getWidth();
+			oldheight=this.getHeight();
+			this.refresh();
+		}
+		synchronized (this){
+			if (image!=null){
+				g.drawImage(image, 0, 0, null);
+			}
+		}
 	}
-
-	@Override
-	public void componentMoved(ComponentEvent e) {
-	}
-
-	@Override
-	public void componentResized(ComponentEvent e) {
-		this.refresh();
-	}
-
-	@Override
-	public void componentShown(ComponentEvent e) {
-	}
-
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		boolean zoomIn=false;
