@@ -51,28 +51,13 @@ public class SortingDialog extends JDialog implements ActionListener{
 		this.cbVoice = new SelectVoiceBox();
 		this.cbVoice.setMaximumSize(new Dimension(500,35));
 		
-		//Experimental
-		this.bGuessSong = new JButton("raten");
-		this.bGuessSong.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Sheet s = current.getSheet();
-				if (s!=null){
-					try {
-						String guess = OCR.getStringsInImage(s.getPreview(new Dimension(25,0), new Dimension(50,20), new Dimension(500,200)));
-						if (guess!=""){
-							cbSong.setSelectedItem(guess);
-						}
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					
-				}
-			}
-			
-		});
+		if (OCR.isAvailable()){
+			//Experimental
+			this.bGuessSong = new JButton("raten");
+			this.bGuessSong.addActionListener(this);
+			this.bGuessVoice = new JButton("raten");
+			this.bGuessVoice.addActionListener(this);
+		}
 		
 		this.bOk = new JButton("Speichern");
 		this.bOk.addActionListener(this);
@@ -109,13 +94,18 @@ public class SortingDialog extends JDialog implements ActionListener{
 		b.add(Box.createHorizontalGlue());
 		b.add(new JLabel("Lied:      "));
 		b.add(cbSong);
-		b.add(bGuessSong);
+		if (bGuessSong!=null){
+			b.add(bGuessSong);
+		}
 		b.add(Box.createHorizontalGlue());
 		this.mainPanel.add(b);
 		b=Box.createHorizontalBox();
 		b.add(Box.createHorizontalGlue());
 		b.add(new JLabel("Stimme:"));
 		b.add(cbVoice);
+		if (bGuessVoice!=null){
+			b.add(bGuessVoice);
+		}
 		b.add(Box.createHorizontalGlue());
 		this.mainPanel.add(b);
 		Box box = Box.createHorizontalBox();
@@ -235,6 +225,39 @@ public class SortingDialog extends JDialog implements ActionListener{
 		}
 	}
 	
+	private void guessSongClicked(){
+		Sheet s = current.getSheet();
+		if (s!=null){
+			try {
+				String guess = OCR.getStringsInImage(s.getPreview(new Dimension(25,0), new Dimension(50,20), new Dimension(500,200)));
+				if (guess!=""){
+					cbSong.setSelectedItem(guess);
+				}
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+		}
+	}
+	
+	private void guessVoiceClicked(){
+		Sheet s = current.getSheet();
+		if (s!=null){
+			try {
+				String guess = OCR.getStringsInImage(s.getPreview(new Dimension(0,0), new Dimension(25,20), new Dimension(250,200)));
+				System.out.println("Guess: "+guess);
+				if (guess!=""){
+					cbVoice.setSelectedItem(guess);
+				}
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+		}
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(this.bRotatePage)){
@@ -245,6 +268,12 @@ public class SortingDialog extends JDialog implements ActionListener{
 		}
 		else if (e.getSource().equals(this.bOk)){
 			this.okClicked();	
+		}
+		else if (this.bGuessSong != null && e.getSource().equals(this.bGuessSong)){
+			this.guessSongClicked();
+		}
+		else if (this.bGuessVoice != null && e.getSource().equals(this.bGuessVoice)){
+			this.guessVoiceClicked();
 		}
 	}
 }

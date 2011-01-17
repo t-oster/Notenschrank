@@ -31,6 +31,11 @@ public class OCR {
 		}
 	}
 
+	public static boolean isAvailable(){
+		//TODO
+		return true;
+	}
+	
 	private static RenderedImage toBufferedImage(Image image) {
 		if (image instanceof RenderedImage){
 			System.out.println("no conversion needed");
@@ -56,8 +61,6 @@ public class OCR {
 				System.err.println("Error writing png");
 				return null;
 			}
-			System.out.println("Exec: "+"convert '"+png.getAbsolutePath()+"' -depth 8 '"+tif.getAbsolutePath()+"'");
-			//Thread.sleep(1000);
 			Process p = Runtime.getRuntime().exec(new String[]{"/usr/bin/convert",png.getAbsolutePath(),"-depth", "4",tif.getAbsolutePath()});
 			InputStream is = p.getErrorStream();
 			int i;
