@@ -120,6 +120,7 @@ public class PreviewPanel extends JPanel implements Runnable, MouseListener, Mou
 				new Thread(this).start();
 			}
 			else{
+				//TODO: interrupt current refresh
 				System.out.println("refresh dropped");
 			}
 		}
