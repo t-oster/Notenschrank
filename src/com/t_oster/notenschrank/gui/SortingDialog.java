@@ -249,6 +249,9 @@ public class SortingDialog extends JDialog implements ActionListener{
 					possible[i]=cbSong.getItemAt(i).toString();
 				}
 				OCRResult guess = OCR.findStringInImage(possible, s.getPreview(new Dimension(25,0), new Dimension(50,20), new Dimension(500,200)));
+				if (guess==null){
+					return;
+				}
 				if (guess.matchquality > 70){
 					cbSong.setSelectedIndex(guess.index);
 				}
@@ -274,7 +277,19 @@ public class SortingDialog extends JDialog implements ActionListener{
 				}
 				OCRResult guess1 = OCR.findStringInImage(possible, s.getPreview(new Dimension(0,0), new Dimension(25,20), new Dimension(250,200)));
 				OCRResult guess2 = OCR.findStringInImage(possible, s.getPreview(new Dimension(75,0), new Dimension(25,20), new Dimension(250,200)));
-				OCRResult guess = guess1.matchquality>guess2.matchquality?guess1:guess2;
+				OCRResult guess=null;
+				if (guess1==null && guess2!=null){
+					guess=guess2;
+				}
+				else if (guess2==null && guess1!=null){
+					guess=guess1;
+				}
+				else if (guess1==null && guess2 == null){
+					return;
+				}
+				else{
+					guess = guess1.matchquality>guess2.matchquality?guess1:guess2;
+				}
 				if (guess.matchquality > 50){
 					cbVoice.setSelectedIndex(guess.index);
 				}

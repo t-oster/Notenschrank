@@ -25,38 +25,66 @@ public class OCR {
 	 * 
 	 * This method ignores the order of the words in possible strings
 	 * eg. "hello world" matches to "world hello" 100%
+	 * 
+	 * returns NULL if no string could be read
 	 */
 	public static OCRResult findStringInImage(String[] possible, Image image) {
 		
 		String readString = getStringsInImage(image);
 		System.out.println("Read String from Image:"+readString);
-		int maxmatch=0;
-		int index=0;
-		for(int i=0;i<possible.length;i++){
-			int match = match(possible[i],readString,true);
-			if (match>maxmatch){
-				maxmatch=match;
-				index=i;
-				if (maxmatch==100){
-					break;
+		if (readString!=null){
+			int maxmatch=0;
+			int index=0;
+			for(int i=0;i<possible.length;i++){
+				int match = match(possible[i],readString,true);
+				if (match>maxmatch){
+					maxmatch=match;
+					index=i;
+					if (maxmatch==100){
+						break;
+					}
 				}
 			}
+			OCRResult result = new OCRResult();
+			result.matchquality=maxmatch;
+			result.index=index;
+			result.beautified=removeBad(readString);
+			return result;
 		}
-		
-		OCRResult result = new OCRResult();
-		result.matchquality=maxmatch;
-		result.index=index;
-		result.beautified=removeBad(readString);
-		return result;
+		else{
+			return null;
+		}
 	}
 
 	private static Boolean isAvailable = null;
 	public static boolean isAvailable(){
 		if (isAvailable == null){
 			try {
-				Process p = Runtime.getRuntime().exec(new String[]{"convert", "--version"});
+				Process p;
+				if (Util.getOS().equals(Util.OS.WINDOWS)){
+					p = Runtime.getRuntime().exec(new String[]{"lib//ImageMagick//convert", "--version"});
+				}
+				else{
+					p = Runtime.getRuntime().exec(new String[]{"convert", "--version"});
+				}
 				if (p==null){
 					throw new IOException("bla");
+				}
+				else{
+					System.out.println("Output of convert --version:");
+					InputStream is = p.getInputStream();
+					int i;
+					do{
+						i = is.read();
+						if (0<=i && i<=255)
+						System.err.write(i);
+					}while (i>=0);
+					is = p.getErrorStream();
+					do{
+						i = is.read();
+						if (0<=i && i<=255)
+						System.err.write(i);
+					}while (i>=0);
 				}
 				p = Runtime.getRuntime().exec(new String[]{"tesseract"});
 				if (p==null){
@@ -97,7 +125,13 @@ public class OCR {
 				System.err.println("Error writing png");
 				return null;
 			}
-			Process p = Runtime.getRuntime().exec(new String[]{"convert",png.getAbsolutePath(),"-depth", "4",tif.getAbsolutePath()});
+			Process p;
+			if (Util.getOS().equals(Util.OS.WINDOWS)){
+				p = Runtime.getRuntime().exec(new String[]{"lib//ImageMagick//convert",png.getAbsolutePath(),"-depth", "4",tif.getAbsolutePath()});
+			}
+			else{
+				p = Runtime.getRuntime().exec(new String[]{"convert",png.getAbsolutePath(),"-depth", "4",tif.getAbsolutePath()});
+			}
 			InputStream is = p.getErrorStream();
 			int i;
 			do{
@@ -195,6 +229,9 @@ public class OCR {
 	 * returns values from 100 to 0
 	 */
 	public static int match(String good, String bad, boolean split){
+		if (good.length()==0){
+			return 0;
+		}
 		if (split){
 			String[] arr = good.split(" ");
 			int sum=0;
@@ -209,6 +246,9 @@ public class OCR {
 	}
 	
 	public static int match(String good, String bad){
+		if (good.length()==0){
+			return 0;
+		}
 		int maxfound=0;
 		
 		for (int start=0;start<bad.length();start++){
