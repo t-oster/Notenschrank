@@ -111,11 +111,13 @@ public class AutoCompletion extends PlainDocument {
 		}
 	}
 
+	private boolean editingExistingObject = true;
+	
 	public void remove(int offs, int len) throws BadLocationException {
 		// return immediately when selecting an item
 		if (selecting)
 			return;
-		if (hitBackspace) {
+		if (editingExistingObject && hitBackspace) {
 			// user hit backspace => move the selection backwards
 			// old item keeps being selected
 			if (offs > 0) {
@@ -143,11 +145,13 @@ public class AutoCompletion extends PlainDocument {
 		// lookup and select a matching item
 		Object item = lookupItem(getText(0, getLength()));
 		if (item != null) {
+			editingExistingObject=true;
 			setSelectedItem(item);
 			setText(item.toString());
 			// select the completed part
 			highlightCompletedText(offs + str.length());
 		} else {
+			editingExistingObject=false;
 			//setText(item.toString());
 			// keep old item selected if there is no match
 			//item = comboBox.getSelectedItem();
