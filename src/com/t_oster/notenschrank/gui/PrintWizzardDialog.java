@@ -1,5 +1,6 @@
 package com.t_oster.notenschrank.gui;
 
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -38,12 +39,15 @@ public class PrintWizzardDialog extends JDialog implements ActionListener {
 		bPrintSong.addActionListener(this);
 		bPrintVoice.addActionListener(this);
 
+		JPanel mainFrame = new JPanel();
 		JPanel b = new JPanel();
-		b.setLayout(new GridLayout(0, 1));
+		b.setLayout(new GridLayout(0, 1, 5, 5));
 		b.add(bPrintOne);
 		b.add(bPrintSong);
 		b.add(bPrintVoice);
-		this.setContentPane(b);
+		mainFrame.add(b);
+		this.setPreferredSize(new Dimension(250,150));
+		this.setContentPane(mainFrame);
 		this.pack();
 		this.setLocationRelativeTo(null);
 	}

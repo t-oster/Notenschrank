@@ -19,7 +19,7 @@ public class SettingsManager implements Serializable {
 	 * 
 	 */
 	private static String SETTINGS_FILE = "settings.dat";
-	private static final long serialVersionUID = 2627505348844681752L;
+	private static final long serialVersionUID = 2627505348844681753L;
 	// Static part for Singelton design pattern
 	private static SettingsManager instance;
 
@@ -45,7 +45,7 @@ public class SettingsManager implements Serializable {
 	}
 
 	// Attributes for Program Settings
-	private String programVersion = "0.1";
+	private String programVersion = "0.9beta";
 	private String archivePath = "Archive";
 	private String stackPath = "Stack";
 	//We want to see the last page in preview instead of the first

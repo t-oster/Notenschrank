@@ -1,5 +1,6 @@
 package com.t_oster.notenschrank.gui;
 
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
@@ -17,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import com.t_oster.notenschrank.data.Archive;
@@ -41,63 +44,79 @@ public class SettingsDialog extends JPanel {
 	private JPanel thiss;
 	
 	private SettingsDialog(){
-		this.setLayout(new GridLayout(0,3));
-		this.add(new JLabel("Archiv:"));
-		this.add(tfArchPath);
-		this.add(bBrowsAP);
-		this.add(new JLabel("Gescannte Dateien:"));
-		this.add(tfStackPath);
-		this.add(bBrowsSP);
-		//TODO: pack this onto scroll panes or new Dialogs
+		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		JPanel mainPanel = new JPanel();
+		mainPanel.setLayout(new GridLayout(0,3));
+		mainPanel.add(new JLabel("Archiv:"));
+		mainPanel.add(tfArchPath);
+		mainPanel.add(bBrowsAP);
+		mainPanel.add(new JLabel("Gescannte Dateien:"));
+		mainPanel.add(tfStackPath);
+		mainPanel.add(bBrowsSP);
+		this.add(mainPanel);
+		JPanel numbersPanel = new JPanel();
+		numbersPanel.setLayout(new GridLayout(0,3));
+		
 		Map<String, Integer> map = SettingsManager.getInstance().getPredefinedNumbers();
 		Voice[] voices = Archive.getInstance().getAvailableVoices();
 		numberFields = new LinkedHashMap<String, JTextField>();
 		if (map!=null && map.size()>0){
 			for (Entry<String, Integer> e:map.entrySet()){
-				this.add(new JLabel("Standard Anzahl für "));
-				this.add(new JLabel(e.getKey()));
+				numbersPanel.add(new JLabel("Standard Anzahl für "));
+				numbersPanel.add(new JLabel(e.getKey()));
 				JTextField tf = new JTextField();
 				tf.setText(e.getValue().toString());
-				this.add(tf);
+				numbersPanel.add(tf);
 				numberFields.put(e.getKey().toString(),tf);
 			}
 		}
+		
 		if (voices != null && voices.length >0){
 			for (Voice v:voices){
 				if (!numberFields.containsKey(v.toString())){
-					this.add(new JLabel("Standard Anzahl für "));
-					this.add(new JLabel(v.toString()));
+					numbersPanel.add(new JLabel("Standard Anzahl für "));
+					numbersPanel.add(new JLabel(v.toString()));
 					JTextField tf = new JTextField();
 					tf.setText("1");
-					this.add(tf);
+					numbersPanel.add(tf);
 					numberFields.put(v.toString(),tf);
 				}
 			}
 		}
+		this.add(new JLabel("Standard-Anzahlen für einzelne Stimmen"));
+		JScrollPane tmp = new JScrollPane(numbersPanel);
+		tmp.setPreferredSize(new Dimension(300,300));
+		this.add(tmp);
+		
+		JPanel defaultSongsPanel = new JPanel();
+		defaultSongsPanel.setLayout(new GridLayout(0,3));
 		Set<String> defaultSongs = SettingsManager.getInstance().getDefaultSongs();
 		Song[] songs = Archive.getInstance().getAvailableSongs();
 		isDefaultFields = new LinkedHashMap<String,JCheckBox>();
 		if (defaultSongs != null){
 			for (String s:defaultSongs){
-				this.add(new JLabel("In aktueller Mappe enthalten"));
-				this.add(new JLabel(s));
+				defaultSongsPanel.add(new JLabel("In aktueller Mappe enthalten"));
+				defaultSongsPanel.add(new JLabel(s));
 				JCheckBox b = new JCheckBox();
 				b.setSelected(true);
-				this.add(b);
+				defaultSongsPanel.add(b);
 				isDefaultFields.put(s,b);
 			}
 		}
 		for (Song s:songs){
 			if (!isDefaultFields.containsKey(s.toString())){
-				this.add(new JLabel("In aktueller Mappe enthalten"));
-				this.add(new JLabel(s.toString()));
+				defaultSongsPanel.add(new JLabel("In aktueller Mappe enthalten"));
+				defaultSongsPanel.add(new JLabel(s.toString()));
 				JCheckBox b = new JCheckBox();
 				b.setSelected(false);
-				this.add(b);
+				defaultSongsPanel.add(b);
 				isDefaultFields.put(s.toString(),b);
 			}
 		}
-		
+		this.add(new JLabel("Stücke für Standard-Mappen"));
+		tmp = new JScrollPane(defaultSongsPanel);
+		tmp.setPreferredSize(new Dimension(300,300));
+		this.add(tmp);
 		this.thiss=this;
 		
 		bBrowsAP.addActionListener(new ActionListener(){
