@@ -106,7 +106,7 @@ public class SortingDialog extends JDialog implements ActionListener{
 		}
 		Box b=Box.createHorizontalBox();
 		b.add(Box.createHorizontalGlue());
-		b.add(new JLabel("Lied:      "));
+		b.add(new JLabel("Stück:     "));
 		b.add(cbSong);
 		if (bGuessSong!=null){
 			b.add(bGuessSong);

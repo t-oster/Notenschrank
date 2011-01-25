@@ -65,7 +65,7 @@ public class PrintVoiceDialogPanel extends JPanel{
 			private static final long serialVersionUID = -1328906876906673675L;
 
 			public String getColumnName(int column){
-				return column==0?"Stimme":"auswählen";
+				return column==0?"Stück":"auswählen";
 			}
 			
 			public boolean isCellEditable(int r, int c){
@@ -111,7 +111,7 @@ public class PrintVoiceDialogPanel extends JPanel{
 		
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		JPanel tmp = new JPanel();
-		tmp.add(new JLabel("Stück"));
+		tmp.add(new JLabel("Stimme"));
 		tmp.add(bVoice);
 		add(tmp);
 		add(new JScrollPane(tSongs));
