@@ -5,6 +5,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.Box;
@@ -38,10 +39,17 @@ public class SortingDialog extends JDialog implements ActionListener {
 	private PreviewPanel previewpanel;
 	private PreviewPanel current;
 	private JPanel mainPanel;
-	private SelectSongBox cbSong;
-	private SelectVoiceBox cbVoice;
+	private List<SelectSongBox> cbSong;
+	private List<SelectVoiceBox> cbVoice;
 	private JButton bOk;
 	private JButton bAddPage;
+	private JButton bDeletePage;
+	private JButton bAddVoice;
+	private JButton bDeleteVoice;
+	private Box songPanel;
+	private Box voicePanel;
+	private JButton bAddSong;
+	private JButton bDeleteSong;
 	private JButton bRotatePage;
 	private JButton bGuessSong;
 	private JButton bGuessVoice;
@@ -53,11 +61,29 @@ public class SortingDialog extends JDialog implements ActionListener {
 		this.setPreferredSize(new Dimension(800, 600));
 		this.previewpanel = new PreviewPanel(this);
 		this.current = new PreviewPanel(this);
-		this.cbSong = new SelectSongBox();
-		this.cbSong.setMaximumSize(new Dimension(500, 35));
-		this.cbVoice = new SelectVoiceBox();
-		this.cbVoice.setMaximumSize(new Dimension(500, 35));
-
+		
+		SelectSongBox cbSong = new SelectSongBox();
+		cbSong.setMaximumSize(new Dimension(500, 35));
+		this.cbSong = new LinkedList<SelectSongBox>();
+		this.cbSong.add(cbSong);
+		
+		this.bAddSong = new JButton("+");
+		this.bAddSong.addActionListener(this);
+		this.bDeleteSong = new JButton("-");
+		this.bDeleteSong.setEnabled(false);
+		this.bDeleteSong.addActionListener(this);
+		
+		this.bAddVoice = new JButton("+");
+		this.bAddVoice.addActionListener(this);
+		this.bDeleteVoice = new JButton("-");
+		this.bDeleteVoice.setEnabled(false);
+		this.bDeleteVoice.addActionListener(this);
+		
+		SelectVoiceBox cbVoice = new SelectVoiceBox();
+		cbVoice.setMaximumSize(new Dimension(500, 35));
+		this.cbVoice = new LinkedList<SelectVoiceBox>();
+		this.cbVoice.add(cbVoice);
+		
 		if (OCR.isAvailable()) {
 			// Experimental
 			this.bGuessSong = new JButton("raten");
@@ -72,6 +98,8 @@ public class SortingDialog extends JDialog implements ActionListener {
 		this.bAddPage.addActionListener(this);
 		this.bRotatePage = new JButton("Seite drehen");
 		this.bRotatePage.addActionListener(this);
+		this.bDeletePage = new JButton("Seite löschen");
+		this.bDeletePage.addActionListener(this);
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
 		// ToolTips
@@ -110,7 +138,11 @@ public class SortingDialog extends JDialog implements ActionListener {
 		Box b = Box.createHorizontalBox();
 		b.add(Box.createHorizontalGlue());
 		b.add(new JLabel("Stück:     "));
-		b.add(cbSong);
+			songPanel = Box.createVerticalBox();
+			songPanel.add(cbSong);
+		b.add(songPanel);
+		b.add(bAddSong);
+		b.add(bDeleteSong);
 		if (bGuessSong != null) {
 			b.add(bGuessSong);
 		}
@@ -119,7 +151,11 @@ public class SortingDialog extends JDialog implements ActionListener {
 		b = Box.createHorizontalBox();
 		b.add(Box.createHorizontalGlue());
 		b.add(new JLabel("Stimme:"));
-		b.add(cbVoice);
+			voicePanel = Box.createVerticalBox();
+			voicePanel.add(cbVoice);
+		b.add(voicePanel);
+		b.add(bAddVoice);
+		b.add(bDeleteVoice);
 		if (bGuessVoice != null) {
 			b.add(bGuessVoice);
 		}
@@ -128,6 +164,7 @@ public class SortingDialog extends JDialog implements ActionListener {
 		Box box = Box.createHorizontalBox();
 		box.add(bAddPage);
 		box.add(bRotatePage);
+		box.add(bDeletePage);
 		box.add(bOk);
 		this.mainPanel.add(box);
 		this.setContentPane(mainPanel);
@@ -218,57 +255,79 @@ public class SortingDialog extends JDialog implements ActionListener {
 
 	private void okClicked() {
 		Sheet s = current.getSheet();
-		Song song = cbSong.getSelectedSong();
-		Voice v = cbVoice.getSelectedVoice();
-		if (song == null || v == null) {
-			JOptionPane.showMessageDialog(this,
-					"Sie müssen sowohl Titel als auch Stimme eingeben",
-					"Fehler", JOptionPane.OK_OPTION);
-			return;
-		}
-		try {
-			if (Archive.getInstance().contains(song, v)) {
-				JPanel existingPreview = new JPanel();
-				existingPreview.setLayout(new BoxLayout(existingPreview,
-						BoxLayout.Y_AXIS));
-				existingPreview.setPreferredSize(new Dimension(400, 400));
-				existingPreview.setMinimumSize(new Dimension(400, 400));
-				existingPreview.setMaximumSize(new Dimension(400, 400));
-				PreviewPanel pp = new PreviewPanel(existingPreview);
-				pp.setPreferredSize(new Dimension(380, 380));
-				pp.setSize(380, 380);
-				pp.showSheet(Archive.getInstance().getSheet(song, v));
-				existingPreview.add(pp);
-				existingPreview.add(new JLabel("Datei ist bereits im Archiv."));
-				existingPreview.add(new JLabel("Überschreiben?"));
-				if (JOptionPane.showConfirmDialog(this, existingPreview,
-						this.getTitle(), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+		for(SelectSongBox cbSong:this.cbSong){
+			for (SelectVoiceBox cbVoice:this.cbVoice){
+				Song song = cbSong.getSelectedSong();
+				Voice v = cbVoice.getSelectedVoice();
+				if (song == null || v == null) {
+					JOptionPane.showMessageDialog(this,
+							"Sie müssen sowohl Titel als auch Stimme eingeben",
+							"Fehler", JOptionPane.OK_OPTION);
 					return;
 				}
+				try {
+					if (Archive.getInstance().contains(song, v)) {
+						JPanel existingPreview = new JPanel();
+						existingPreview.setLayout(new BoxLayout(existingPreview,
+								BoxLayout.Y_AXIS));
+						existingPreview.setPreferredSize(new Dimension(400, 400));
+						existingPreview.setMinimumSize(new Dimension(400, 400));
+						existingPreview.setMaximumSize(new Dimension(400, 400));
+						PreviewPanel pp = new PreviewPanel(existingPreview);
+						pp.setPreferredSize(new Dimension(380, 380));
+						pp.setSize(380, 380);
+						pp.showSheet(Archive.getInstance().getSheet(song, v));
+						existingPreview.add(pp);
+						existingPreview.add(new JLabel("Datei ist bereits im Archiv."));
+						existingPreview.add(new JLabel("Überschreiben?"));
+						if (JOptionPane.showConfirmDialog(this, existingPreview,
+								this.getTitle(), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+							return;
+						}
+					}
+					Archive.getInstance().addToArchive(s, song, v);
+				} catch (Exception e1) {
+					e1.printStackTrace();
+					JOptionPane.showMessageDialog(this,
+							"Fehler beim speichern der Seite");
+				}
 			}
-			Archive.getInstance().addToArchive(s, song, v);
-			s.delete();
-			Sheet p = previewpanel.getSheet();
-			if (p == null) {
-				this.dispose();
-			}
-			this.current.showSheet(p);
-			if (this.stackSheets.size() > 0) {
-				this.previewpanel.showSheet(this.stackSheets.remove(0));
-			} else {
-				this.previewpanel.showSheet(null);
-				this.bAddPage.setEnabled(false);
-			}
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			JOptionPane.showMessageDialog(this,
-					"Fehler beim speichern der Seite");
+		}
+		s.delete();
+		Sheet p = previewpanel.getSheet();
+		if (p == null) {
+			this.dispose();
+		}
+		this.current.showSheet(p);
+		if (this.stackSheets.size() > 0) {
+			this.previewpanel.showSheet(this.stackSheets.remove(0));
+		} else {
+			this.previewpanel.showSheet(null);
+			this.bAddPage.setEnabled(false);
 		}
 	}
 
+	private void deleteClicked() {
+		Sheet s = current.getSheet();
+		s.delete();
+		Sheet p = previewpanel.getSheet();
+		if (p == null) {
+			this.dispose();
+		}
+		this.current.showSheet(p);
+		if (this.stackSheets.size() > 0) {
+			this.previewpanel.showSheet(this.stackSheets.remove(0));
+		} else {
+			this.previewpanel.showSheet(null);
+			this.bAddPage.setEnabled(false);
+		}
+	}
+
+	
 	private void guessSongClicked() {
 		bGuessSong.setEnabled(false);
 		Sheet s = current.getSheet();
+		SelectSongBox cbSong = this.cbSong.get(0);
 		if (s != null) {
 			try {
 				String[] possible = new String[cbSong.getItemCount()];
@@ -297,6 +356,7 @@ public class SortingDialog extends JDialog implements ActionListener {
 	private void guessVoiceClicked() {
 		bGuessVoice.setEnabled(false);
 		Sheet s = current.getSheet();
+		SelectVoiceBox cbVoice = this.cbVoice.get(0);
 		if (s != null) {
 			try {
 				String[] possible = new String[cbVoice.getItemCount()];
@@ -340,6 +400,8 @@ public class SortingDialog extends JDialog implements ActionListener {
 			this.rotateClicked();
 		} else if (e.getSource().equals(this.bAddPage)) {
 			this.addClicked();
+		} else if (e.getSource().equals(this.bDeletePage)) {
+			this.deleteClicked();
 		} else if (e.getSource().equals(this.bOk)) {
 			this.okClicked();
 		} else if (this.bGuessSong != null
@@ -348,6 +410,30 @@ public class SortingDialog extends JDialog implements ActionListener {
 		} else if (this.bGuessVoice != null
 				&& e.getSource().equals(this.bGuessVoice)) {
 			this.guessVoiceClicked();
+		} else if (e.getSource().equals(this.bAddSong)){
+			SelectSongBox cbSong = new SelectSongBox();
+			cbSong.setMaximumSize(new Dimension(500, 35));
+			this.cbSong.add(cbSong);
+			this.songPanel.add(cbSong);
+			this.bDeleteSong.setEnabled(true);
+		} else if (e.getSource().equals(this.bDeleteSong)){
+			this.songPanel.remove(this.cbSong.remove(cbSong.size()-1));
+			if (this.cbSong.size()==1){
+				this.bDeleteSong.setEnabled(false);
+			}
+			this.validate();
+		} else if (e.getSource().equals(this.bAddVoice)){
+			SelectVoiceBox cbVoice = new SelectVoiceBox();
+			cbVoice.setMaximumSize(new Dimension(500, 35));
+			this.cbVoice.add(cbVoice);
+			this.voicePanel.add(cbVoice);
+			this.bDeleteVoice.setEnabled(true);
+		} else if (e.getSource().equals(this.bDeleteVoice)){
+			this.voicePanel.remove(this.cbVoice.remove(cbVoice.size()-1));
+			if (this.cbVoice.size()==1){
+				this.bDeleteVoice.setEnabled(false);
+			}
+			this.validate();
 		}
 	}
 }

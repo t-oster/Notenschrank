@@ -236,8 +236,15 @@ public class Sheet {
 		}
 		case LINUX: {
 			// TODO: doesn't work
-			Runtime.getRuntime().exec(
-					new String[] { "lp", pdf_file.getAbsolutePath() });
+			try {
+				Runtime.getRuntime().exec(
+						new String[] { "printpdf", pdf_file.getAbsolutePath() }).waitFor();
+			} catch (InterruptedException e) {
+				throw new UnsupportedOperationException(
+						"Unter ihrem Betriebssystem können die Dokumente nicht direkt gedruckt werden."
+								+ "\nBitte drucken Sie manuell die Datei: '"
+								+ pdf_file.getAbsolutePath() + "'");
+			}
 			break;
 		}
 		default: {

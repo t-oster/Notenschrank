@@ -2,6 +2,8 @@ package com.t_oster.notenschrank.data;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,7 +41,9 @@ public class Archive {
  			return new Song[0];
  		}
 		LinkedList<Song> result = new LinkedList<Song>();
-		for(File f:SettingsManager.getInstance().getArchivePath().listFiles()){
+		File[] files = SettingsManager.getInstance().getArchivePath().listFiles();
+		Arrays.sort(files, alphabetical);
+		for(File f:files){
 			if (f.isDirectory()){
 				result.add(new Song(f.getName()));
 			}
@@ -84,7 +88,9 @@ public class Archive {
 			return this.getAvailableVoices();
 		}
 		LinkedList<Voice> result = new LinkedList<Voice>();
-		for(File f:calculatePath(s).listFiles()){
+		File[] files = calculatePath(s).listFiles();
+		Arrays.sort(files,alphabetical);
+		for(File f:files){
 			if (f.isFile()){
 				result.add(new Voice(getVoiceName(f)));
 			}
@@ -95,7 +101,9 @@ public class Archive {
 	public Sheet[] getSheets(Song s) throws IOException{
 		LinkedList<Sheet> result = new LinkedList<Sheet>();
 		File path = new File(SettingsManager.getInstance().getArchivePath(),s.toString());
-		for(File f:path.listFiles()){
+		File[] files = path.listFiles();
+		Arrays.sort(files,alphabetical);
+		for(File f:files){
 			if (f.isFile()){
 				result.add(new Sheet(f));
 			}
@@ -124,9 +132,25 @@ public class Archive {
 		}
 	}
 	
+	private static final Comparator<File> lastModified = new Comparator<File>() {
+		@Override
+		public int compare(File o1, File o2) {
+			return o1.lastModified() == o2.lastModified() ? 0 : (o1.lastModified() > o2.lastModified() ? 1 : -1 ) ;
+		}
+	};
+	
+	private static final Comparator<File> alphabetical = new Comparator<File>() {
+		@Override
+		public int compare(File o1, File o2) {
+			return o1.getName().compareToIgnoreCase(o2.getName());
+		}
+	};
+	
 	public List<Sheet> getUnsortedSheets() throws IOException{
+		File[] files = SettingsManager.getInstance().getStackPath().listFiles();
+		Arrays.sort(files, lastModified);
 		LinkedList<Sheet> result = new LinkedList<Sheet>();
-		for(File f:SettingsManager.getInstance().getStackPath().listFiles()){
+		for(File f:files){
 			if (f.isFile()){
 				result.add(new Sheet(f));
 			}

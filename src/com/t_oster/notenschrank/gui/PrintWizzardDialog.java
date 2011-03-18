@@ -139,7 +139,7 @@ public class PrintWizzardDialog extends JDialog implements ActionListener {
 					pw = new ProgressWindow(this.getTitle(),
 							"drucke...", 0, sheets.length);
 					for (int i = 0; i < sheets.length; i++) {
-						for (int j = 0; i < numbers[i]; j++) {
+						for (int j = 0; j < numbers[i]; j++) {
 							sheets[i].print();
 						}
 						pw.setState(i);
