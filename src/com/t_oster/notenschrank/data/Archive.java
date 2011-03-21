@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import com.itextpdf.text.DocumentException;
 
@@ -63,8 +63,8 @@ public class Archive {
 	}
  	
 	public Voice[] getAvailableVoices(){
-		//Using HashMap of String and not Voice because it doesn't work properly
-		Set<String> result = new HashSet<String>();
+		//Using TreeSet (should be sorted) of String and not Voice because it doesn't work properly
+		Set<String> result = new TreeSet<String>();
 		for (Song s:this.getAvailableSongs()){
 			for (Voice v:this.getAvailableVoices(s)){
 				result.add(v.toString());

@@ -56,7 +56,6 @@ public class PrintVoiceDialogPanel extends JPanel{
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				availableSongs = Archive.getInstance().getAvailableSongs(bVoice.getSelectedVoice());
 				selectedNumbers = new boolean[availableSongs.length];
 				selectedVoices = new Voice[availableSongs.length];
 				for (int i=0;i<availableSongs.length;i++){

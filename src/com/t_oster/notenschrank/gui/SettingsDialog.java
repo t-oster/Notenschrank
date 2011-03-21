@@ -85,7 +85,7 @@ public class SettingsDialog extends JPanel {
 		}
 		this.add(new JLabel("Standard-Anzahlen für einzelne Stimmen"));
 		JScrollPane tmp = new JScrollPane(numbersPanel);
-		tmp.setPreferredSize(new Dimension(300,300));
+		tmp.setPreferredSize(new Dimension(300,200));
 		this.add(tmp);
 		
 		JPanel defaultSongsPanel = new JPanel();
@@ -115,7 +115,7 @@ public class SettingsDialog extends JPanel {
 		}
 		this.add(new JLabel("Stücke für Standard-Mappen"));
 		tmp = new JScrollPane(defaultSongsPanel);
-		tmp.setPreferredSize(new Dimension(300,300));
+		tmp.setPreferredSize(new Dimension(300,200));
 		this.add(tmp);
 		this.thiss=this;
 		
