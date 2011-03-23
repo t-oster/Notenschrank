@@ -12,12 +12,10 @@ public class SelectVoiceBox extends JComboBox {
 	 * 
 	 */
 	private static final long serialVersionUID = 2217011651055295158L;
-
-
+	
 	public SelectVoiceBox(Song s){
 		super(Archive.getInstance().getAvailableVoices(s));
-		this.setEditable(false);
-		//AutoCompletion.enable(this);
+		AutoCompletion.enable(this, false);
 	}
 	
 	public SelectVoiceBox(){
@@ -28,7 +26,7 @@ public class SelectVoiceBox extends JComboBox {
 		super(Archive.getInstance().getAvailableVoices());
 		//this.setEditable(true);
 		if (autocomplete){
-			AutoCompletion.enable(this);
+			AutoCompletion.enable(this, true);
 		}
 	}
 	

@@ -62,7 +62,7 @@ public class SortingDialog extends JDialog implements ActionListener {
 		this.previewpanel = new PreviewPanel(this);
 		this.current = new PreviewPanel(this);
 		
-		SelectSongBox cbSong = new SelectSongBox();
+		SelectSongBox cbSong = new SelectSongBox(true, true);
 		cbSong.setMaximumSize(new Dimension(500, 35));
 		this.cbSong = new LinkedList<SelectSongBox>();
 		this.cbSong.add(cbSong);
@@ -166,6 +166,9 @@ public class SortingDialog extends JDialog implements ActionListener {
 		box.add(bRotatePage);
 		box.add(bDeletePage);
 		box.add(bOk);
+		
+		cbSong.requestFocusInWindow();
+		
 		this.mainPanel.add(box);
 		this.setContentPane(mainPanel);
 		this.pack();
@@ -411,7 +414,7 @@ public class SortingDialog extends JDialog implements ActionListener {
 				&& e.getSource().equals(this.bGuessVoice)) {
 			this.guessVoiceClicked();
 		} else if (e.getSource().equals(this.bAddSong)){
-			SelectSongBox cbSong = new SelectSongBox();
+			SelectSongBox cbSong = new SelectSongBox(true, true);
 			cbSong.setMaximumSize(new Dimension(500, 35));
 			this.cbSong.add(cbSong);
 			this.songPanel.add(cbSong);

@@ -12,15 +12,11 @@ public class SelectSongBox extends JComboBox {
 	 */
 	private static final long serialVersionUID = 5468068515401007273L;	
 	
-	public SelectSongBox(boolean autocomplete){
+	public SelectSongBox(boolean autocomplete, boolean editable){
 		super(Archive.getInstance().getAvailableSongs());
 		if (autocomplete){
-			AutoCompletion.enable(this);
+			AutoCompletion.enable(this, editable);
 		}
-	}
-	
-	public SelectSongBox(){
-		this(true);
 	}
 	
 	public Song getSelectedSong(){

@@ -27,7 +27,7 @@ public class PrintOneDialogPanel extends JPanel{
 	
 	public PrintOneDialogPanel(){
 		this.setLayout(new GridLayout(0,2));
-		bSong = new SelectSongBox(false);
+		bSong = new SelectSongBox(true,false);
 		bSong.addActionListener(new ActionListener(){
 
 			@Override

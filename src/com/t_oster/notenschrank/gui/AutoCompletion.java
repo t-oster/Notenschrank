@@ -25,11 +25,15 @@ public class AutoCompletion extends PlainDocument {
 	boolean hitBackspace = false;
 	boolean hitBackspaceOnSelection;
 	boolean editingExistingObject = true;
-
+	boolean editable = false;
+	
+	
 	KeyListener editorKeyListener;
 	FocusListener editorFocusListener;
 
-	public AutoCompletion(final JComboBox comboBox) {
+	public AutoCompletion(final JComboBox comboBox, boolean editable) {
+		this.editable=editable;
+		
 		this.comboBox = comboBox;
 		model = comboBox.getModel();
 		comboBox.addActionListener(new ActionListener() {
@@ -91,11 +95,11 @@ public class AutoCompletion extends PlainDocument {
 		highlightCompletedText(0);
 	}
 
-	public static void enable(JComboBox comboBox) {
+	public static void enable(JComboBox comboBox, boolean editable) {
 		// has to be editable
 		comboBox.setEditable(true);
 		// change the editor's document
-		new AutoCompletion(comboBox);
+		new AutoCompletion(comboBox, editable);
 	}
 
 	void configureEditor(ComboBoxEditor newEditor) {
@@ -149,23 +153,31 @@ public class AutoCompletion extends PlainDocument {
 			editingExistingObject=true;
 			comboBox.setPopupVisible(true);
 			setSelectedItem(item);
-			setText(item.toString());
-			// select the completed part
-			highlightCompletedText(offs + str.length());
+			if (!editable){
+				setText(item.toString());
+				// select the completed part
+				highlightCompletedText(offs + str.length());
+			}
 		} else {
-			editingExistingObject=false;
-			comboBox.setPopupVisible(false);
-			//setText(item.toString());
-			// keep old item selected if there is no match
-			//item = comboBox.getSelectedItem();
-			// imitate no insert (later on offs will be incremented by
-			// str.length(): selection won't move forward)
-			//offs = offs - str.length();
-			// provide feedback to the user that his input has been received but
-			// can not be accepted
-			//comboBox.getToolkit().beep(); // when available use:
+			if (editable){
+				editingExistingObject=false;
+				comboBox.setPopupVisible(false);
+			}
+			else {
+				// keep old item selected if there is no match
+				item = comboBox.getSelectedItem();
+				setText(item.toString());
+				// imitate no insert (later on offs will be incremented by
+				//str.length(): selection won't move forward)
+				//offs = offs - str.length();
+				highlightCompletedText(offs);
+				// provide feedback to the user that his input has been received but
+				// can not be accepted
+				comboBox.getToolkit().beep(); // when available use:
 											// UIManager.getLookAndFeel().provideErrorFeedback(comboBox);
-		}	
+		
+			}
+		}
 	}
 
 	private void setText(String text) {
@@ -216,25 +228,5 @@ public class AutoCompletion extends PlainDocument {
 		return str1.toUpperCase().startsWith(str2.toUpperCase());
 	}
 
-	private static void createAndShowGUI() {
-		// the combo box (add/modify items if you like to)
-		final JComboBox comboBox = new JComboBox(new Object[] { "Ester",
-				"Jordi", "Jordina", "Jorge", "Sergi" });
-		enable(comboBox);
-
-		// create and show a window containing the combo box
-		final JFrame frame = new JFrame();
-		frame.setDefaultCloseOperation(3);
-		frame.getContentPane().add(comboBox);
-		frame.pack();
-		frame.setVisible(true);
-	}
-
-	public static void main(String[] args) {
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				createAndShowGUI();
-			}
-		});
-	}
+	
 }

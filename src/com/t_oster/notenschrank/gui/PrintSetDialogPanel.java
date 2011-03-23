@@ -32,7 +32,7 @@ public class PrintSetDialogPanel extends JPanel{
 	
 	
 	public PrintSetDialogPanel(){
-		bSong = new SelectSongBox(false);
+		bSong = new SelectSongBox(true,false);
 		availableVoices = Archive.getInstance().getAvailableVoices(bSong.getSelectedSong());
 		selectedNumbers = new int[availableVoices.length];
 		Map<String,Integer> m= SettingsManager.getInstance().getPredefinedNumbers();
