@@ -22,12 +22,9 @@ public class SelectVoiceBox extends JComboBox {
 		this(true);
 	}
 	
-	public SelectVoiceBox(boolean autocomplete){
+	public SelectVoiceBox(boolean editable){
 		super(Archive.getInstance().getAvailableVoices());
-		//this.setEditable(true);
-		if (autocomplete){
-			AutoCompletion.enable(this, true);
-		}
+		AutoCompletion.enable(this, editable);
 	}
 	
 	/**
