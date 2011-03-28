@@ -2,15 +2,20 @@ package com.t_oster.notenschrank.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Set;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultCellEditor;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -23,7 +28,7 @@ import com.t_oster.notenschrank.data.Sheet;
 import com.t_oster.notenschrank.data.Song;
 import com.t_oster.notenschrank.data.Voice;
 
-public class PrintVoiceDialogPanel extends JPanel{
+public class PrintVoiceDialogPanel extends JPanel implements ActionListener{
 	/**
 	 * 
 	 */
@@ -35,6 +40,7 @@ public class PrintVoiceDialogPanel extends JPanel{
 	private Song[] availableSongs;
 	private boolean[] selectedNumbers;
 	private Voice[] selectedVoices;
+	private JButton bSelectAll, bSelectNone;
 	
 	public PrintVoiceDialogPanel(){
 		//this.setLayout(new GridLayout(0,2));
@@ -162,8 +168,50 @@ public class PrintVoiceDialogPanel extends JPanel{
 				return super.getCellEditor(row,column);
 			}
 		};
+		tSongs.addMouseListener(new MouseListener(){
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				if (arg0.getClickCount()==2){
+					if (tSongs.columnAtPoint(arg0.getPoint())==0){
+						int index = tSongs.rowAtPoint(arg0.getPoint());
+						if (selectedVoices[index]!=null){
+							Sheet preview;
+							try {
+								preview = Archive.getInstance().getSheet(availableSongs[index], selectedVoices[index]);
+								JOptionPane.showMessageDialog(tSongs.getParent(), 
+										new PreviewPanel(tSongs.getParent(), preview));
+							} catch (IOException e) {
+								JOptionPane.showMessageDialog(tSongs.getParent(), e.getMessage());
+							}
+											
+						}
+					}
+				}
+			}
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+			}
+			
+		});
 		tSongs.setFillsViewportHeight(true);
 		cbPreview = new JCheckBox("Druckvorschau");
+		bSelectAll = new JButton("Alle auswählen");
+		bSelectAll.addActionListener(this);
+		bSelectNone = new JButton("Keinen auswählen");
+		bSelectNone.addActionListener(this);
 		
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		JPanel tmp = new JPanel();
@@ -171,7 +219,11 @@ public class PrintVoiceDialogPanel extends JPanel{
 		tmp.add(bVoice);
 		add(tmp);
 		add(new JScrollPane(tSongs));
-		add(cbPreview);
+		Box box = Box.createHorizontalBox();
+		box.add(bSelectAll);
+		box.add(bSelectNone);
+		box.add(cbPreview);
+		add(box);
 	}
 	
 	public boolean isPreviewSelected(){
@@ -186,6 +238,22 @@ public class PrintVoiceDialogPanel extends JPanel{
 			}
 		}
 		return result.toArray(new Sheet[0]);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource().equals(this.bSelectAll)){
+			for(int i=0;i<selectedNumbers.length;i++){
+				selectedNumbers[i]=true;
+			}
+			tSongsModel.fireTableDataChanged();
+		}
+		else if (e.getSource().equals(this.bSelectNone)){
+			for(int i=0;i<selectedNumbers.length;i++){
+				selectedNumbers[i]=false;
+			}
+			tSongsModel.fireTableDataChanged();
+		}
 	}
 	
 }

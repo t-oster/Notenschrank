@@ -45,7 +45,7 @@ public class SettingsManager implements Serializable {
 	}
 
 	// Attributes for Program Settings
-	private String programVersion = "1.0beta2";
+	private String programVersion = "1.1";
 	private String archivePath = "Archive";
 	private String stackPath = "Stack";
 	//We want to see the last page in preview instead of the first

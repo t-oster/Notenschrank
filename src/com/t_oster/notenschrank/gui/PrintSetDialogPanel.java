@@ -2,15 +2,22 @@ package com.t_oster.notenschrank.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTable;
+import javax.swing.SpinnerListModel;
 import javax.swing.table.AbstractTableModel;
 
 import com.t_oster.notenschrank.data.Archive;
@@ -18,7 +25,7 @@ import com.t_oster.notenschrank.data.SettingsManager;
 import com.t_oster.notenschrank.data.Sheet;
 import com.t_oster.notenschrank.data.Voice;
 
-public class PrintSetDialogPanel extends JPanel{
+public class PrintSetDialogPanel extends JPanel implements ActionListener{
 	/**
 	 * 
 	 */
@@ -29,6 +36,8 @@ public class PrintSetDialogPanel extends JPanel{
 	private JCheckBox cbPreview;
 	private Voice[] availableVoices;
 	private int[] selectedNumbers;
+	private JButton bSetAll;
+	private JSpinner tfAllNumber;
 	
 	
 	public PrintSetDialogPanel(){
@@ -101,9 +110,47 @@ public class PrintSetDialogPanel extends JPanel{
 			}
 			
 		};
+		
 		tVoices = new JTable(tVoicesModel);
 		tVoices.setFillsViewportHeight(true);
+		tVoices.addMouseListener(new MouseListener(){
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount()==2){
+					if (tVoices.columnAtPoint(e.getPoint())==0){
+						int index = tVoices.rowAtPoint(e.getPoint());
+						try{
+							Sheet preview = Archive.getInstance().getSheet(bSong.getSelectedSong(), availableVoices[index]);
+							JOptionPane.showMessageDialog(tVoices.getParent(),
+									new PreviewPanel(tVoices.getParent(), preview));
+						}
+						catch(Exception ex){
+							
+						}
+					}
+				}
+			}
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+			@Override
+			public void mousePressed(MouseEvent e) {	
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+		});
+		
 		cbPreview = new JCheckBox("Druckvorschau");
+		bSetAll = new JButton("Anzahl alle");
+		bSetAll.addActionListener(this);
+		tfAllNumber = new JSpinner(
+				new SpinnerListModel(new Integer[]{0,1,2,3,4,5})
+				);
 		
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		JPanel tmp = new JPanel();
@@ -111,7 +158,11 @@ public class PrintSetDialogPanel extends JPanel{
 		tmp.add(bSong);
 		add(tmp);
 		add(new JScrollPane(tVoices));
-		add(cbPreview);
+		Box box = Box.createHorizontalBox();
+		box.add(tfAllNumber);
+		box.add(bSetAll);
+		box.add(cbPreview);
+		add(box);
 	
 		
 	}
@@ -126,6 +177,17 @@ public class PrintSetDialogPanel extends JPanel{
 	
 	public int[] getSelectedNumbers(){
 		return selectedNumbers;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource().equals(bSetAll)){
+			int i = (Integer) tfAllNumber.getValue();
+			for (int k=0;k<selectedNumbers.length;k++){
+				selectedNumbers[k]=i;
+			}
+			tVoicesModel.fireTableDataChanged();
+		}
 	}
 	
 }
