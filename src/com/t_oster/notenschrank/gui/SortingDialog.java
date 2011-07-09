@@ -304,6 +304,7 @@ public class SortingDialog extends JDialog implements ActionListener {
 		this.current.showSheet(p);
 		if (this.stackSheets.size() > 0) {
 			this.previewpanel.showSheet(this.stackSheets.remove(0));
+                        this.cbVoice.get(0).requestFocus();
 		} else {
 			this.previewpanel.showSheet(null);
 			this.bAddPage.setEnabled(false);
