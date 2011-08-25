@@ -11,6 +11,8 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.security.InvalidParameterException;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -237,8 +239,9 @@ public class Sheet {
 		case LINUX: {
 			// TODO: doesn't work
 			try {
-				Runtime.getRuntime().exec(
-						new String[] { "printpdf", pdf_file.getAbsolutePath() }).waitFor();
+				Runtime.getRuntime()
+						.exec(new String[] { "printpdf",
+								pdf_file.getAbsolutePath() }).waitFor();
 			} catch (InterruptedException e) {
 				throw new UnsupportedOperationException(
 						"Unter ihrem Betriebssystem können die Dokumente nicht direkt gedruckt werden."
@@ -337,5 +340,42 @@ public class Sheet {
 			if (outChannel != null)
 				outChannel.close();
 		}
+	}
+
+	/**
+	 * Creates a new PDF file for every page in the sheet and returns a List of
+	 * Sheets containing those.
+	 * 
+	 * @return a list of Sheets containing PDF files for each page of this sheet
+	 * @throws IOException 
+	 * @throws DocumentException 
+	 */
+	public List<Sheet> tileInPages() throws IOException, DocumentException {
+		List<Sheet> result = new LinkedList<Sheet>();
+		PdfReader pdfReader = this.getItextReader();
+		for (int page = 1; page <= pdfReader.getNumberOfPages(); page++) {
+			//Generate Filename
+			File file = this.pdf_file;
+			int i=0;
+			while (file.exists())
+			{
+				String parent = this.pdf_file.getParent();
+				String name = this.pdf_file.getName();
+				file = new File(parent+File.separator+(i++)+name);
+			}
+			Document document = new Document();
+			FileOutputStream stream = new FileOutputStream(file);
+			PdfWriter writer = PdfWriter.getInstance(document, stream);
+			document.open();
+			document.newPage();
+			PdfImportedPage page1 = writer.getImportedPage(pdfReader,
+					page);
+			PdfContentByte cb = writer.getDirectContent();
+			cb.addTemplate(page1, 0, 0);
+			stream.flush();
+			document.close();
+			result.add(new Sheet(file));
+		}
+		return result;
 	}
 }

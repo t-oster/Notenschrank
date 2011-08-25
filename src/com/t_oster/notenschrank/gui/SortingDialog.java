@@ -178,7 +178,10 @@ public class SortingDialog extends JDialog implements ActionListener {
 	public void showDialog(){
 		
 		try{
+			ProgressWindow pw = new ProgressWindow("Bitte warten", "Lese Daten", 0, 0);
+			pw.setIntermediate(true);
 			this.stackSheets = Archive.getInstance().getUnsortedSheets();
+			pw.close();
 			while (stackSheets.size()==0){
 				if (JOptionPane.showConfirmDialog(null, "Keine Noten zum sortieren vorhanden\nBitte scannen Sie zuerst welche ein.\n"
 						+"Die Noten müssen im PDF-Format vorliegen.\n\n"

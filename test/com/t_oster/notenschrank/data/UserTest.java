@@ -36,7 +36,7 @@ public class UserTest {
 	}
 	
 	@Test
-	public void PreviewPanelTest() throws IOException{
+	public void PreviewPanelTest() throws IOException, DocumentException{
 		JDialog d = new JDialog();
 		PreviewPanel p = new PreviewPanel(d);
 		p.showSheet(Archive.getInstance().getUnsortedSheets().get(0));

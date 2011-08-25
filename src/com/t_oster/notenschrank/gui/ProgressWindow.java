@@ -1,8 +1,9 @@
 package com.t_oster.notenschrank.gui;
 
+import java.awt.Frame;
+
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -40,11 +41,13 @@ public class ProgressWindow extends JDialog
 	public ProgressWindow(String title, String text, int min, int max){
 		this(null, title, text, min, max);
 	}
-	public ProgressWindow(JFrame parent, String title, String text, int min, int max)
+	public ProgressWindow(Frame parent, String title, String text, int min, int max)
 	{
 		super(parent);
 		this.setTitle(title);
-		this.setLocationByPlatform(true);
+		//this.setLocationByPlatform(true);
+		//this.setL
+		this.setLocationRelativeTo(parent);
 		this.setResizable(false);
 		this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		JPanel mainPanel = new JPanel();
@@ -104,6 +107,11 @@ public class ProgressWindow extends JDialog
 		this.max=max;
 		percent.setText(""+(100*(state-min)/(max-min))+"%");
 		progBar.setMaximum(max);
+		this.refresh();
+	}
+	public void setIntermediate(boolean im)
+	{
+		this.progBar.setIndeterminate(im);
 		this.refresh();
 	}
 	public void close()

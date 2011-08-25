@@ -146,13 +146,26 @@ public class Archive {
 		}
 	};
 	
-	public List<Sheet> getUnsortedSheets() throws IOException{
+	public List<Sheet> getUnsortedSheets() throws IOException, DocumentException{
 		File[] files = SettingsManager.getInstance().getStackPath().listFiles();
 		Arrays.sort(files, lastModified);
 		LinkedList<Sheet> result = new LinkedList<Sheet>();
 		for(File f:files){
 			if (f.isFile()){
-				result.add(new Sheet(f));
+				Sheet s = new Sheet(f);
+				if (s.numberOfPages() > 1)//Tile Sheet into multiple files, adding each as new sheet
+				{
+					List<Sheet> pages = s.tileInPages();
+					s.delete();
+					for (Sheet page:pages)
+					{
+						result.add(page);
+					}
+				}
+				else
+				{
+					result.add(s);
+				}
 			}
 		}
 		return result;
