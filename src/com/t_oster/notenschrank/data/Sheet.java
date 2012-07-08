@@ -24,8 +24,10 @@ import com.itextpdf.text.pdf.PdfNumber;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.sun.pdfview.PDFFile;
-import com.sun.pdfview.PDFPage;
+import java.awt.image.BufferedImage;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+
 
 public class Sheet {
 
@@ -33,17 +35,12 @@ public class Sheet {
 	public static final boolean USE_LOWAGIE_PDFLIB = true;
 
 	private File pdf_file;
-	private PDFFile pdf_renderer_pdf;
+	private PDDocument pdf_renderer_pdf;
 	private PdfReader itext_reader;
 
-	private PDFFile getPdfRendererPDF() throws IOException {
+	private PDDocument getPdfRendererPDF() throws IOException {
 		if (pdf_renderer_pdf == null) {
-			// load a pdf from a byte buffer
-			RandomAccessFile raf = new RandomAccessFile(pdf_file, "r");
-			FileChannel channel = raf.getChannel();
-			ByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, 0,
-					channel.size());
-			pdf_renderer_pdf = new PDFFile(buf);
+                    pdf_renderer_pdf = PDDocument.load(pdf_file.getAbsolutePath());
 		}
 		return pdf_renderer_pdf;
 	}
@@ -75,19 +72,22 @@ public class Sheet {
 							+ relPosition);
 		}
 
-		PDFFile pdffile = this.getPdfRendererPDF();
-		// draw the first page to an image
-		PDFPage page = null;
+                PDDocument pdfdocument = this.getPdfRendererPDF();
+                List<PDPage> pages = pdfdocument.getDocumentCatalog().getAllPages();
+                
+                PDPage page = null;
 		if (SettingsManager.getInstance().isShowLastPage()) {
-			page = pdffile.getPage(pdffile.getNumPages());
+			page = pages.get(pages.size()-1);
 		} else {
-			page = pdffile.getPage(1);
+			page = pages.get(0);
 		}
+
+                BufferedImage buffImage = page.convertToImage();
 
 		// get the width and height for the doc at the default zoom
 
-		int docwidth = (int) page.getBBox().getWidth();
-		int docheight = (int) page.getBBox().getHeight();
+		int docwidth = (int) buffImage.getWidth();
+		int docheight = (int) buffImage.getHeight();
 
 		int abswidth = docwidth * relSize.width / 100;
 		int absheight = docheight * relSize.height / 100;
@@ -102,19 +102,12 @@ public class Sheet {
 		}
 		// TODO: FixRotation
 		// generate the image
-		Image img = page.getImage(imagesize.width, imagesize.height, // width &
-																		// height
-				rect, // clip rect
-				null, // null for the ImageObserver
-				true, // fill background with white
-				true // block until drawing is done
-				);
-
+		Image img = buffImage.getSubimage(posx, posy, abswidth, absheight);
 		return img;
 	}
 
 	public int numberOfPages() throws IOException {
-		return this.getPdfRendererPDF().getNumPages();
+		return this.getPdfRendererPDF().getNumberOfPages();
 	}
 
 	public void rotatePage(int[] pages, int quarters) throws IOException,
