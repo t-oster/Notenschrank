@@ -1,5 +1,6 @@
 package com.t_oster.notenschrank.gui;
 
+import com.t_oster.notenschrank.data.SettingsManager;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -10,12 +11,9 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.LinkedList;
 import java.util.List;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
-import com.t_oster.notenschrank.data.SettingsManager;
 
 
 public class MainFrame extends JFrame implements ActionListener, WindowListener{
@@ -128,7 +126,7 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener{
 		
 	}
 
-	@Override
+  @Override
 	public void windowIconified(WindowEvent e) {
 		// nothing
 		

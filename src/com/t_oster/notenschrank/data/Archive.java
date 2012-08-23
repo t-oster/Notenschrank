@@ -1,5 +1,6 @@
 package com.t_oster.notenschrank.data;
 
+import com.itextpdf.text.DocumentException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -8,8 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
-import com.itextpdf.text.DocumentException;
 
 public class Archive {
 	private static Archive instance;

@@ -1,5 +1,6 @@
 package com.t_oster.notenschrank.gui;
 
+import com.t_oster.notenschrank.data.Sheet;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -13,14 +14,11 @@ import java.awt.event.MouseWheelListener;
 import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.LinkedList;
-
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.border.BevelBorder;
-
-import com.t_oster.notenschrank.data.Sheet;
 
 public class PreviewPanel extends JPanel implements Runnable, MouseListener, MouseWheelListener{
 	
@@ -196,6 +194,7 @@ public class PreviewPanel extends JPanel implements Runnable, MouseListener, Mou
 
 	int oldwidth=0;
 	int oldheight=0;
+  @Override
 	public void paintComponent(Graphics g){
 		super.paintComponent(g);
 		if (this.getWidth()!= oldwidth || this.getHeight()!=oldheight){

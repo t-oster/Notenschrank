@@ -1,5 +1,9 @@
 package com.t_oster.notenschrank.gui;
 
+import com.t_oster.notenschrank.data.Archive;
+import com.t_oster.notenschrank.data.SettingsManager;
+import com.t_oster.notenschrank.data.Song;
+import com.t_oster.notenschrank.data.Voice;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -10,7 +14,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -21,11 +24,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-
-import com.t_oster.notenschrank.data.Archive;
-import com.t_oster.notenschrank.data.SettingsManager;
-import com.t_oster.notenschrank.data.Song;
-import com.t_oster.notenschrank.data.Voice;
 
 
 public class SettingsDialog extends JPanel {

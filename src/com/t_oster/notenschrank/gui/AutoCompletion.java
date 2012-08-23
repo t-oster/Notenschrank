@@ -118,6 +118,7 @@ public class AutoCompletion extends PlainDocument {
 
 	
 	
+  @Override
 	public void remove(int offs, int len) throws BadLocationException {
 		// return immediately when selecting an item
 		if (selecting)
@@ -140,6 +141,7 @@ public class AutoCompletion extends PlainDocument {
 		}
 	}
 
+  @Override
 	public void insertString(int offs, String str, AttributeSet a)
 			throws BadLocationException {
 		// return immediately when selecting an item

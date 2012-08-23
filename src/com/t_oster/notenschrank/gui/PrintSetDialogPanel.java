@@ -1,12 +1,15 @@
 package com.t_oster.notenschrank.gui;
 
+import com.t_oster.notenschrank.data.Archive;
+import com.t_oster.notenschrank.data.SettingsManager;
+import com.t_oster.notenschrank.data.Sheet;
+import com.t_oster.notenschrank.data.Voice;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.Map;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -19,11 +22,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.SpinnerListModel;
 import javax.swing.table.AbstractTableModel;
-
-import com.t_oster.notenschrank.data.Archive;
-import com.t_oster.notenschrank.data.SettingsManager;
-import com.t_oster.notenschrank.data.Sheet;
-import com.t_oster.notenschrank.data.Voice;
 
 public class PrintSetDialogPanel extends JPanel implements ActionListener{
 	/**

@@ -13,10 +13,12 @@ public class Voice implements Serializable{
 		this.name = name;
 	}
 	
+  @Override
 	public String toString(){
 		return name;
 	}
 	
+  @Override
 	public boolean equals(Object o){
 		if (o instanceof Voice){
 			return (this.name.equals(((Voice) o).name));
@@ -25,4 +27,12 @@ public class Voice implements Serializable{
 			return super.equals(o);
 		}
 	}
+
+  @Override
+  public int hashCode()
+  {
+    int hash = 7;
+    hash = 83 * hash + (this.name != null ? this.name.hashCode() : 0);
+    return hash;
+  }
 }

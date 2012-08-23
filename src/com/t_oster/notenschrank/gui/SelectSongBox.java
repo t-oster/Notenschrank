@@ -1,9 +1,8 @@
 package com.t_oster.notenschrank.gui;
 
-import javax.swing.JComboBox;
-
 import com.t_oster.notenschrank.data.Archive;
 import com.t_oster.notenschrank.data.Song;
+import javax.swing.JComboBox;
 
 public class SelectSongBox extends JComboBox {
 

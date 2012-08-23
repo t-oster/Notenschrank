@@ -1,5 +1,6 @@
 package com.t_oster.notenschrank.data;
 
+import com.t_oster.notenschrank.gui.SortingDialog;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -11,8 +12,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-
-import com.t_oster.notenschrank.gui.SortingDialog;
 
 public class SettingsManager implements Serializable {
 	/**

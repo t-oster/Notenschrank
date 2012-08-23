@@ -1,5 +1,12 @@
 package com.t_oster.notenschrank.gui;
 
+import com.t_oster.notenschrank.data.Archive;
+import com.t_oster.notenschrank.data.OCR;
+import com.t_oster.notenschrank.data.OCR.OCRResult;
+import com.t_oster.notenschrank.data.SettingsManager;
+import com.t_oster.notenschrank.data.Sheet;
+import com.t_oster.notenschrank.data.Song;
+import com.t_oster.notenschrank.data.Voice;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -7,7 +14,6 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -17,14 +23,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-
-import com.t_oster.notenschrank.data.Archive;
-import com.t_oster.notenschrank.data.OCR;
-import com.t_oster.notenschrank.data.OCR.OCRResult;
-import com.t_oster.notenschrank.data.SettingsManager;
-import com.t_oster.notenschrank.data.Sheet;
-import com.t_oster.notenschrank.data.Song;
-import com.t_oster.notenschrank.data.Voice;
 
 public class SortingDialog extends JDialog implements ActionListener {
 

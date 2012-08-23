@@ -1,18 +1,16 @@
 package com.t_oster.notenschrank.gui;
 
+import com.t_oster.notenschrank.data.Archive;
+import com.t_oster.notenschrank.data.Sheet;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerListModel;
-
-import com.t_oster.notenschrank.data.Archive;
-import com.t_oster.notenschrank.data.Sheet;
 
 public class PrintOneDialogPanel extends JPanel{
 	/**
