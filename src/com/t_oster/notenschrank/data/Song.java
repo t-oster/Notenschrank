@@ -1,6 +1,6 @@
 package com.t_oster.notenschrank.data;
 
-public class Song {
+public class Song implements Comparable{
 	private String name;
 	
 	public Song(String name){
@@ -29,4 +29,14 @@ public class Song {
 			return super.equals(o);
 		}
 	}
+
+  @Override
+  public int compareTo(Object t)
+  {
+    if (t instanceof Song)
+    {
+      return this.name.compareToIgnoreCase(((Song) t).name);
+    }
+    return 0;
+  }
 }

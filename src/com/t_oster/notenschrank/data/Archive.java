@@ -62,19 +62,11 @@ public class Archive {
 	}
  	
 	public Voice[] getAvailableVoices(){
-		//Using TreeSet (should be sorted) of String and not Voice because it doesn't work properly
-		Set<String> result = new TreeSet<String>();
+		Set<Voice> result = new TreeSet<Voice>();
 		for (Song s:this.getAvailableSongs()){
-			for (Voice v:this.getAvailableVoices(s)){
-				result.add(v.toString());
-			}
+      result.addAll(Arrays.asList(this.getAvailableVoices(s)));
 		}
-		Voice[] rresult = new Voice[result.size()];
-		int i=0;
-		for(String s:result){
-			rresult[i++]=new Voice(s);
-		}
-		return rresult;
+		return result.toArray(new Voice[0]);
 	}
 	
 	/**
@@ -86,10 +78,8 @@ public class Archive {
 		if (s==null){
 			return this.getAvailableVoices();
 		}
-		LinkedList<Voice> result = new LinkedList<Voice>();
-		File[] files = calculatePath(s).listFiles();
-		Arrays.sort(files,alphabetical);
-		for(File f:files){
+		TreeSet<Voice> result = new TreeSet<Voice>();
+		for(File f:calculatePath(s).listFiles()){
 			if (f.isFile()){
 				result.add(new Voice(getVoiceName(f)));
 			}

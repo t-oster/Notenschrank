@@ -2,7 +2,7 @@ package com.t_oster.notenschrank.data;
 
 import java.io.Serializable;
 
-public class Voice implements Serializable{
+public class Voice implements Serializable, Comparable{
 	/**
 	 * 
 	 */
@@ -34,5 +34,15 @@ public class Voice implements Serializable{
     int hash = 7;
     hash = 83 * hash + (this.name != null ? this.name.hashCode() : 0);
     return hash;
+  }
+
+  @Override
+  public int compareTo(Object t)
+  {
+    if (t instanceof Voice)
+    {
+      return this.name.compareToIgnoreCase(((Voice) t).name);
+    }
+    return 0;
   }
 }
